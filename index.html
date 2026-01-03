@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daniel C. Morgan - Resume</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/babel-standalone@6.26.0/babel.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+            color: #111827;
+        }
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 1rem;
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        .timeline-item {
+            margin-bottom: 2rem;
+            padding-left: 0;
+        }
+        .timeline-item::before,
+        .timeline-item::after {
+            display: none;
+        }
+        .printable {
+            @apply print:bg-white print:shadow-none print:p-0;
+        }
+        @media print {
+            .no-print {
+                display: none;
+            }
+        }
+        .project-card {
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            transition: box-shadow 0.2s;
+        }
+        .project-card:hover {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .skill-tag {
+            background-color: #dbeafe;
+            color: #1e40af;
+            font-size: 0.875rem;
+            font-weight: 500;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+        }
+        .btn {
+            background-color: #3b82f6;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            transition: background-color 0.2s;
+            display: inline-block;
+            text-decoration: none;
+        }
+        .btn:hover {
+            background-color: #2563eb;
+        }
+        .btn-secondary {
+            background-color: #6b7280;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            transition: background-color 0.2s;
+            display: inline-block;
+            text-decoration: none;
+        }
+        .btn-secondary:hover {
+            background-color: #4b5563;
+        }
+        .btn-green {
+            background-color: #10b981;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            transition: background-color 0.2s;
+            display: inline-block;
+            text-decoration: none;
+        }
+        .tech-tag {
+            background-color: #dcfce7;
+            color: #166534;
+            font-size: 0.75rem;
+            padding: 0.125rem 0.5rem;
+            border-radius: 0.25rem;
+        }
+    </style>
+</head>
+<body class="bg-white text-gray-900">
+    <div id="root"></div>
+    <script type="text/babel">
+        function Resume() {
+            const handlePrint = () => {
+                window.print();
+            };
+
+            return (
+                <div className="max-w-4xl mx-auto p-6 sm:p-8 bg-white mt-8 printable">
+                    {/* Header */}
+                    <header className="text-center mb-16">
+                        <img src="https://avatars.githubusercontent.com/u/1395951?v=4" alt="Daniel Colin Morgan's profile picture" className="w-24 h-24 rounded-full mx-auto mb-6 object-cover" />
+                        <h1 className="text-5xl font-bold text-gray-900 mb-2">Daniel C Morgan</h1>
+                        <p className="text-base text-gray-600 mb-1">Research Dev/Engineer | Graph-Based Product Development</p>
+                        <p className="text-sm text-gray-500">Stockholm, Sweden</p>
+                        <div className="mt-6 flex justify-center gap-4 no-print">
+                            <a
+                                href="https://www.linkedin.com/in/dcolinmorgan"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="btn"
+                            >
+                                LinkedIn
+                            </a>
+                            <a
+                                href="https://github.com/dcolinmorgan"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="btn-secondary"
+                            >
+                                GitHub
+                            </a>
+                            <a
+                                href="https://x.com/dcolinmorgan"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="btn-secondary"
+                            >
+                                Twitter
+                            </a>
+                            <button
+                                onClick={handlePrint}
+                                className="btn-green"
+                            >
+                                Print Resume
+                            </button>
+                        </div>
+                    </header>
+
+                    {/* About */}
+                    <section className="mb-12">
+                        <h2 className="section-title">About</h2>
+                        <p className="text-gray-700 leading-relaxed">
+                            As a Bioinformaticist turned Engineer, I have over 10 years of experience working with universities and companies worldwide. Recently, I have focused on building products that solve real-world problems using graph-based structures and advanced technologies.
+                        </p>
+                    </section>
+
+                    {/* Work Experience */}
+                    <section className="mb-12">
+                        <h2 className="section-title">Work Experience</h2>
+                        <div className="space-y-6">
+                            <div className="border-b border-gray-200 pb-6 last:border-b-0">
+                                <h3 className="text-xl font-semibold text-gray-900">Data Scientist</h3>
+                                <p className="text-gray-600"><strong>Olink</strong>, Uppsala, SE | 2025 - Present</p>
+                                <p className="text-gray-700 mt-2">Investigate & discover platform features & content via AI/ML, utilizing LLMs. Technologies: Torch, AWS.</p>
+                            </div>
+                            <div className="border-b border-gray-200 pb-6 last:border-b-0">
+                                <h3 className="text-xl font-semibold text-gray-900">Research Engineer</h3>
+                                <p className="text-gray-600"><strong>Graphistry</strong>, Remote | 2022 - 2024</p>
+                                <p className="text-gray-700 mt-2">Contributed to development of AI agents utilizing LLMs, developed GPU-accelerated network analysis toolkit and libraries, and built graph-based analysis and machine learning pipelines. Technologies: RAPIDS, CUDF, CUML, Python, Docker, Kubernetes, AWS.</p>
+                            </div>
+                            <div className="border-b border-gray-200 pb-6 last:border-b-0">
+                                <h3 className="text-xl font-semibold text-gray-900">Postdoctoral Research Fellow</h3>
+                                <p className="text-gray-600"><strong>Harvard Medical School</strong>, Boston, MA | 2019 - 2021</p>
+                                <p className="text-gray-700 mt-2">Epigenetics analysis. Developed NetZoo, implemented GPU speed increases. Technologies: Python, R, Bash.</p>
+                            </div>
+                            <div className="border-b border-gray-200 pb-6 last:border-b-0">
+                                <h3 className="text-xl font-semibold text-gray-900">Research Fellow</h3>
+                                <p className="text-gray-600"><strong>Hong Kong University</strong>, Hong Kong, HKSAR | 2021 - 2022</p>
+                                <p className="text-gray-700 mt-2">Research Lead for Metagenomics.</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Education */}
+                    <section className="mb-12">
+                        <h2 className="section-title">Education</h2>
+                        <div className="space-y-6">
+                            <div className="border-b border-gray-200 pb-6 last:border-b-0">
+                                <h3 className="text-xl font-semibold text-gray-900">Doctoral Degree in Bioinformatics</h3>
+                                <p className="text-gray-600"><strong>Stockholm University</strong> | 2015 - 2019</p>
+                                <p className="text-gray-700 mt-2">Thesis: Control Systems Engineering of Biological Networks</p>
+                            </div>
+                            <div className="border-b border-gray-200 pb-6 last:border-b-0">
+                                <h3 className="text-xl font-semibold text-gray-900">Masters of Science Degree in Bioinformatics</h3>
+                                <p className="text-gray-600"><strong>Ohio State University</strong> | 2012 - 2014</p>
+                                <p className="text-gray-700 mt-2">Thesis: Biological Networks Clique Merger Algorithm</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Skills */}
+                    <section className="mb-12">
+                        <h2 className="section-title">Skills</h2>
+                        <div className="flex flex-wrap gap-2">
+                            <span className="skill-tag">Graph-Theory</span>
+                            <span className="skill-tag">Python</span>
+                            <span className="skill-tag">RAPIDS/CUDA</span>
+                            <span className="skill-tag">Machine Learning</span>
+                            <span className="skill-tag">Bioinformatics</span>
+                            <span className="skill-tag">Singularity/Docker</span>
+                        </div>
+                    </section>
+
+                    {/* Side Projects */}
+                    <section className="mb-12">
+                        <h2 className="section-title">Side Projects</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="project-card">
+                                <h3 className="text-lg font-semibold text-gray-900 mb-2">cu-cat</h3>
+                                <p className="text-gray-700 mb-2">An end-to-end GPU feature encoder developed for Graphistry.</p>
+                                <div className="flex flex-wrap gap-1">
+                                    <span className="tech-tag">feature-engineering</span>
+                                    <span className="tech-tag">python</span>
+                                    <span className="tech-tag">RAPIDS</span>
+                                    <span className="tech-tag">CUML/CUDF</span>
+                                    <span className="tech-tag">GPU</span>
+                                    <span className="tech-tag">AI Agents/LLM</span>
+                                </div>
+                                <a href="https://github.com/graphistry/cu-cat/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline mt-2 inline-block">View Project</a>
+                            </div>
+                            <div className="project-card">
+                                <h3 className="text-lg font-semibold text-gray-900 mb-2">Graphistry</h3>
+                                <p className="text-gray-700 mb-2">Graph Visualization built on GPUs.</p>
+                                <div className="flex flex-wrap gap-1">
+                                    <span className="tech-tag">network science</span>
+                                    <span className="tech-tag">python</span>
+                                    <span className="tech-tag">RAPIDS</span>
+                                    <span className="tech-tag">GPU</span>
+                                </div>
+                                <a href="https://graphistry.com/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline mt-2 inline-block">View Project</a>
+                            </div>
+                            <div className="project-card">
+                                <h3 className="text-lg font-semibold text-gray-900 mb-2">NetZoo</h3>
+                                <p className="text-gray-700 mb-2">Message Passing Family of Algorithms for Inferring Biological Networks.</p>
+                                <div className="flex flex-wrap gap-1">
+                                    <span className="tech-tag">python</span>
+                                    <span className="tech-tag">R</span>
+                                    <span className="tech-tag">Bash</span>
+                                </div>
+                                <a href="https://netzoo.github.io/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline mt-2 inline-block">View Project</a>
+                            </div>
+                            <div className="project-card">
+                                <h3 className="text-lg font-semibold text-gray-900 mb-2">Viral_Snake</h3>
+                                <p className="text-gray-700 mb-2">Workflow for viral metagenomics analysis.</p>
+                                <div className="flex flex-wrap gap-1">
+                                    <span className="tech-tag">singularity</span>
+                                    <span className="tech-tag">snakemake</span>
+                                    <span className="tech-tag">bioinformatics</span>
+                                    <span className="tech-tag">python</span>
+                                    <span className="tech-tag">Bash</span>
+                                </div>
+                                <a href="https://github.com/dcolinmorgan/viral_snake" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline mt-2 inline-block">View Project</a>
+                            </div>
+                            <div className="project-card">
+                                <h3 className="text-lg font-semibold text-gray-900 mb-2">GeneSPIDER</h3>
+                                <p className="text-gray-700 mb-2">Platform for synthetic biological data generation and network inference.</p>
+                                <div className="flex flex-wrap gap-1">
+                                    <span className="tech-tag">MATLAB</span>
+                                    <span className="tech-tag">R</span>
+                                    <span className="tech-tag">python</span>
+                                </div>
+                                <a href="https://sonnhammer-tutorials.bitbucket.io/genespider.html" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline mt-2 inline-block">View Project</a>
+                            </div>
+                        </div>
+                    </section>
+                    <footer className="text-center text-gray-400 text-sm mt-16">
+                        <p>© 2025 Daniel C Morgan</p>
+                    </footer>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<Resume />, document.getElementById('root'));
+    </script>
+</body>
+</html>
