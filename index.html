@@ -3,294 +3,1024 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daniel C. Morgan - Resume</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/babel-standalone@6.26.0/babel.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>dcm@world:~$ whoami</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #00ff41;
+            --dim: #00aa2a;
+            --dark: #003b00;
+            --bg: #0a0a0a;
+            --accent1: #ffb000;
+            --accent2: #00ffff;
+            --accent3: #ff0040;
+            --title: #ffffff;
+            --scanline-opacity: 1;
+            --rain-opacity: 0.06;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; transition: color 0.4s, background-color 0.4s, border-color 0.4s, box-shadow 0.4s, text-shadow 0.4s; }
+
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #ffffff;
-            color: #111827;
+            font-family: 'Fira Code', monospace;
+            background: var(--bg);
+            color: var(--primary);
+            overflow-x: hidden;
+            min-height: 100vh;
         }
-        .section-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #374151;
+
+        /* Theme toast */
+        #theme-toast {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: var(--dark);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            padding: 8px 16px;
+            z-index: 3000;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s, transform 0.3s;
+            pointer-events: none;
+            box-shadow: 0 0 15px color-mix(in srgb, var(--primary) 20%, transparent);
+        }
+        #theme-toast.show { opacity: 1; transform: translateY(0); }
+
+        /* CRT + Scanline overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0,0,0,0.15) 0px,
+                rgba(0,0,0,0.15) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+            z-index: 1000;
+            opacity: var(--scanline-opacity);
+            transition: opacity 0.4s;
+        }
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.6) 100%);
+            pointer-events: none;
+            z-index: 999;
+            opacity: var(--scanline-opacity);
+            transition: opacity 0.4s;
+        }
+
+        /* Flicker */
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            92% { opacity: 1; }
+            93% { opacity: 0.8; }
+            94% { opacity: 1; }
+            96% { opacity: 0.9; }
+            97% { opacity: 1; }
+        }
+
+        #crt { animation: flicker 4s infinite; }
+
+        /* Boot screen */
+        #boot {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            transition: opacity 0.5s;
+        }
+        #boot.hidden { opacity: 0; pointer-events: none; }
+        #boot-text {
+            font-size: 14px;
+            white-space: pre;
+            line-height: 1.6;
+            text-align: left;
+            max-width: 700px;
+        }
+
+        /* Glitch */
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            20% { transform: translate(-2px, 1px); }
+            40% { transform: translate(2px, -1px); }
+            60% { transform: translate(-1px, -2px); }
+            80% { transform: translate(1px, 2px); }
+        }
+        @keyframes glitch-color {
+            0%, 100% { text-shadow: 2px 0 var(--accent2), -2px 0 var(--accent3); }
+            25% { text-shadow: -2px 0 var(--accent2), 2px 0 var(--accent3); }
+            50% { text-shadow: 2px 2px var(--accent2), -2px -2px var(--accent3); }
+            75% { text-shadow: -2px 2px var(--accent3), 2px -2px var(--accent2); }
+        }
+        .glitch:hover {
+            animation: glitch 0.3s infinite, glitch-color 0.3s infinite;
+        }
+
+        /* Cursor blink */
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+        .cursor::after {
+            content: '█';
+            animation: blink 1s step-end infinite;
+            color: var(--primary);
+        }
+
+        /* Main layout */
+        #terminal {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+            opacity: 0;
+            transition: opacity 0.8s;
+        }
+        #terminal.visible { opacity: 1; }
+
+        /* ASCII header */
+        .ascii-header {
+            font-size: 10px;
+            line-height: 1.2;
+            color: var(--accent2);
+            text-align: center;
             margin-bottom: 1rem;
-            border-bottom: none;
-            padding-bottom: 0;
+            white-space: pre;
+            text-shadow: 0 0 10px var(--accent2), 0 0 20px color-mix(in srgb, var(--accent2) 30%, transparent);
         }
-        .timeline-item {
-            margin-bottom: 2rem;
-            padding-left: 0;
+
+        .prompt { color: var(--accent2); }
+        .path { color: var(--accent1); }
+        .cmd { color: var(--primary); }
+
+        /* Section blocks */
+        .section {
+            margin-bottom: 2.5rem;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.5s ease;
         }
-        .timeline-item::before,
-        .timeline-item::after {
-            display: none;
+        .section.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
-        .printable {
-            @apply print:bg-white print:shadow-none print:p-0;
+
+        .section-header {
+            color: var(--accent1);
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            border-bottom: 1px solid var(--dark);
+            padding-bottom: 0.25rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
-        @media print {
-            .no-print {
-                display: none;
-            }
+
+        .entry { margin-bottom: 1.25rem; font-size: 13px; line-height: 1.6; }
+        .entry-title { color: var(--title); font-weight: 600; }
+        .entry-meta { color: var(--accent3); font-size: 12px; }
+        .entry-desc { color: var(--dim); font-size: 12px; }
+
+        /* Tags */
+        .tag {
+            display: inline-block;
+            border: 1px solid var(--dark);
+            color: var(--primary);
+            font-size: 11px;
+            padding: 1px 8px;
+            margin: 2px 3px 2px 0;
+            background: color-mix(in srgb, var(--primary) 5%, transparent);
         }
+
+        /* Links */
+        a {
+            color: var(--accent2);
+            text-decoration: none;
+            border-bottom: 1px dashed var(--dark);
+            transition: all 0.2s;
+        }
+        a:hover {
+            color: var(--title);
+            text-shadow: 0 0 8px var(--accent2);
+            border-bottom-color: var(--accent2);
+        }
+
+        /* Project grid */
+        .project-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        @media (max-width: 600px) {
+            .project-grid { grid-template-columns: 1fr; }
+            .ascii-header { font-size: 7px; }
+            #terminal { padding: 1rem 0.75rem; }
+            .nav { gap: 0.3rem; }
+            .nav-btn { font-size: 11px; padding: 3px 8px; }
+            .social-row { gap: 0.5rem; }
+            .skill-name { width: 100px; font-size: 11px; }
+            #skills-chart { height: 260px !important; }
+            .status-bar { font-size: 9px; padding: 4px 0.75rem; }
+            .section-header { font-size: 12px; letter-spacing: 1px; }
+            .entry { font-size: 12px; }
+        }
+
+        /* Print button */
+        .print-btn {
+            background: none;
+            border: 1px solid var(--dark);
+            color: var(--dim);
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            padding: 4px 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .print-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: color-mix(in srgb, var(--primary) 10%, transparent);
+            text-shadow: 0 0 5px var(--primary);
+        }
+
+        /* Skill tooltip */
+        #skill-tooltip {
+            position: absolute;
+            background: var(--bg);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            font-family: 'Fira Code', monospace;
+            font-size: 11px;
+            padding: 6px 10px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.15s;
+            z-index: 100;
+            white-space: nowrap;
+            box-shadow: 0 0 12px color-mix(in srgb, var(--primary) 20%, transparent);
+            line-height: 1.5;
+        }
+        #skill-tooltip.visible { opacity: 1; }
+
         .project-card {
-            background-color: #f9fafb;
-            border: 1px solid #e5e7eb;
-            border-radius: 0.5rem;
-            padding: 1rem;
-            transition: box-shadow 0.2s;
+            border: 1px solid var(--dark);
+            padding: 0.75rem;
+            background: color-mix(in srgb, var(--primary) 3%, transparent);
+            transition: all 0.3s;
         }
         .project-card:hover {
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary);
+            background: color-mix(in srgb, var(--primary) 6%, transparent);
+            box-shadow: 0 0 15px color-mix(in srgb, var(--primary) 10%, transparent), inset 0 0 15px color-mix(in srgb, var(--primary) 3%, transparent);
         }
-        .skill-tag {
-            background-color: #dbeafe;
-            color: #1e40af;
-            font-size: 0.875rem;
-            font-weight: 500;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
+
+        /* Nav bar */
+        .nav {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--dark);
         }
-        .btn {
-            background-color: #3b82f6;
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 9999px;
-            transition: background-color 0.2s;
+        .nav-btn {
+            background: none;
+            border: 1px solid var(--dark);
+            color: var(--dim);
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            padding: 4px 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .nav-btn:hover, .nav-btn.active {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: color-mix(in srgb, var(--primary) 10%, transparent);
+            text-shadow: 0 0 5px var(--primary);
+        }
+
+        /* Social row */
+        .social-row {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.75rem;
+            flex-wrap: wrap;
+        }
+        .social-link {
+            border: 1px solid var(--dark);
+            padding: 4px 14px;
+            font-size: 12px;
+            transition: all 0.3s;
             display: inline-block;
-            text-decoration: none;
         }
-        .btn:hover {
-            background-color: #2563eb;
+        .social-link:hover {
+            border-color: var(--accent2);
+            background: color-mix(in srgb, var(--accent2) 8%, transparent);
+            box-shadow: 0 0 10px color-mix(in srgb, var(--accent2) 20%, transparent);
         }
-        .btn-secondary {
-            background-color: #6b7280;
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 9999px;
-            transition: background-color 0.2s;
-            display: inline-block;
-            text-decoration: none;
+
+        /* Matrix rain canvas */
+        #matrix-bg {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            opacity: var(--rain-opacity);
+            transition: opacity 0.4s;
         }
-        .btn-secondary:hover {
-            background-color: #4b5563;
+
+        /* Graph background canvas */
+        #graph-bg {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            opacity: 0.15;
+            pointer-events: none;
+            transition: opacity 0.4s;
+            width: 100%;
+            height: 100%;
         }
-        .btn-green {
-            background-color: #10b981;
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 9999px;
-            transition: background-color 0.2s;
-            display: inline-block;
-            text-decoration: none;
+
+        /* Skill bar */
+        .skill-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.4rem;
+            font-size: 12px;
         }
-        .tech-tag {
-            background-color: #dcfce7;
-            color: #166534;
-            font-size: 0.75rem;
-            padding: 0.125rem 0.5rem;
-            border-radius: 0.25rem;
+        .skill-name { width: 140px; color: var(--dim); }
+        .skill-track {
+            flex: 1;
+            height: 8px;
+            background: var(--dark);
+            position: relative;
+            overflow: hidden;
+        }
+        .skill-fill {
+            height: 100%;
+            background: var(--primary);
+            box-shadow: 0 0 6px var(--primary);
+            width: 0;
+            transition: width 1.5s ease;
+        }
+
+        /* Typing effect for about */
+        .typed-text { border-right: 2px solid var(--primary); padding-right: 2px; }
+        .typed-text.done { border-right: none; }
+
+        /* Status bar */
+        .status-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: color-mix(in srgb, var(--dark) 90%, var(--bg));
+            border-top: 1px solid var(--dark);
+            padding: 4px 1.5rem;
+            font-size: 11px;
+            display: flex;
+            justify-content: space-between;
+            z-index: 500;
+            color: var(--dim);
+        }
+
+        @media print {
+            body::before, body::after, #matrix-bg, #graph-bg, #boot, .status-bar, .print-btn, .nav, .ascii-header { display: none !important; }
+            #crt { animation: none !important; }
+            #terminal { opacity: 1 !important; padding: 0 !important; margin: 0 !important; max-width: 100% !important; }
+            .section { opacity: 1 !important; transform: none !important; margin-bottom: 0.6rem !important; }
+            .section.no-print { display: none !important; }
+            body { background: #fff; color: #000; font-size: 11px; }
+            .section-header { color: #000; text-shadow: none; font-size: 12px; margin-bottom: 0.3rem; padding-bottom: 0.1rem; }
+            .entry { margin-bottom: 0.4rem !important; font-size: 11px; line-height: 1.3; }
+            .entry-title { color: #000; }
+            .entry-meta { color: #666; font-size: 10px; }
+            .entry-desc { color: #333; font-size: 10px; }
+            .tag { font-size: 9px; padding: 0 4px; margin: 1px 2px 1px 0; }
+            .skill-name { color: #333; }
+            .shell-line { display: none !important; }
+            br { display: none !important; }
+            .social-row { margin-top: 0.3rem; }
+            .social-link { font-size: 10px; padding: 2px 8px; }
+            a { color: #0066cc; }
         }
     </style>
 </head>
-<body class="bg-white text-gray-900">
-    <div id="root"></div>
-    <script type="text/babel">
-        function Resume() {
-            const handlePrint = () => {
-                window.print();
-            };
+<body>
+    <canvas id="matrix-bg"></canvas>
+    <canvas id="graph-bg"></canvas>
+    <div id="theme-toast"></div>
 
-            return (
-                <div className="max-w-4xl mx-auto p-6 sm:p-8 bg-white mt-8 printable">
-                    {/* Header */}
-                    <header className="text-center mb-16">
-                        <div className="flex justify-center gap-4 mb-6">
-                            <img src="img/Gemini_Generated_Image_gulmsbgulmsbgulm.png" alt="Image 2" className="w-48 h-48 object-cover rounded" />
-                            <img src="img/Gemini_Generated_Image_6lbggq6lbggq6lbg.png" alt="Image 1" className="w-48 h-48 object-cover rounded" />
-                            <img src="img/Gemini_Generated_Image_q7eoboq7eoboq7eo.png" alt="Image 3" className="w-48 h-48 object-cover rounded" />
-                            <img src="img/Gemini_Generated_Image_nkbz8pnkbz8pnkbz.png" alt="Image 4" className="w-48 h-48 object-cover rounded" />
-                        </div>
-                        <h1 className="text-5xl font-bold text-gray-900 mb-2">Daniel C Morgan</h1>
-                        <p className="text-base text-gray-600 mb-1">Graph-Based Research Scientist & Engineer</p>
-                        <p className="text-sm text-gray-500">Stockholm, Sweden</p>
-                        <div className="mt-6 flex justify-center gap-4 no-print">
-                            <a
-                                href="https://www.linkedin.com/in/dcolinmorgan"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="btn"
-                            >
-                                LinkedIn
-                            </a>
-                            <a
-                                href="https://github.com/dcolinmorgan"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="btn-secondary"
-                            >
-                                GitHub
-                            </a>
-                            <a
-                                href="https://x.com/dcolinmorgan"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="btn-secondary"
-                            >
-                                Twitter
-                            </a>
-                            <button
-                                onClick={handlePrint}
-                                className="btn-green"
-                            >
-                                Print Resume
-                            </button>
-                        </div>
-                    </header>
+    <div id="boot">
+        <div id="boot-text"></div>
+    </div>
 
-                    {/* About */}
-                    <section className="mb-12">
-                        <h2 className="section-title">About</h2>
-                        <p className="text-gray-700 leading-relaxed">
-                            As a Bioinformaticist turned Engineer, I have over 10 years of experience working with universities and companies worldwide. Recently, I have focused on building products that solve real-world problems using graph-based structures and advanced technologies.
-                        </p>
-                    </section>
+    <div id="crt">
+        <div id="terminal">
+            <pre class="ascii-header">
+ ____   ____ __  __
+|  _ \ / ___|  \/  |
+| | | | |   | |\/| |
+| |_| | |___| |  | |
+|____/ \____|_|  |_|
+            </pre>
 
-                    {/* Work Experience */}
-                    <section className="mb-12">
-                        <h2 className="section-title">Work Experience</h2>
-                        <div className="space-y-6">
-                            <div className="border-b border-gray-200 pb-6 last:border-b-0">
-                                <h3 className="text-xl font-semibold text-gray-900">Data Scientist</h3>
-                                <p className="text-red-600"><strong>Olink Proteomics</strong>, Uppsala, SE | 2025 - Present</p>
-                                <p className="text-gray-700 mt-2">Investigate & discover platform features & content via AI/ML, utilizing LLMs. Technologies: Torch, AWS.</p>
-                            </div>
-                            <div className="border-b border-gray-200 pb-6 last:border-b-0">
-                                <h3 className="text-xl font-semibold text-gray-900">Research Engineer</h3>
-                                <p className="text-red-600"><strong>Graphistry</strong>, Remote | 2022 - 2024</p>
-                                <p className="text-gray-700 mt-2">Contributed to development of AI agents utilizing LLMs, developed GPU-accelerated network analysis toolkit and libraries, and built graph-based analysis and machine learning pipelines. Technologies: RAPIDS, CUDF, CUML, Python, Docker, Kubernetes, AWS.</p>
-                            </div>
-                            <div className="border-b border-gray-200 pb-6 last:border-b-0">
-                                <h3 className="text-xl font-semibold text-gray-900">Research Fellow</h3>
-                                <p className="text-red-600"><strong>Hong Kong University</strong>, Hong Kong, HKSAR | 2021 - 2023</p>
-                                <p className="text-gray-700 mt-2">Metagenomics Research Lead.</p>
-                            </div>
-                            <div className="border-b border-gray-200 pb-6 last:border-b-0">
-                                <h3 className="text-xl font-semibold text-gray-900">Postdoctoral Research Fellow</h3>
-                                <p className="text-red-600"><strong>Harvard Medical School</strong>, Boston, MA | 2019 - 2021</p>
-                                <p className="text-gray-700 mt-2">Epigenetics analysis. Developed NetZoo, implemented GPU speed increases. Technologies: Python, R, Bash.</p>
-                            </div>
+            <div class="nav">
+                <button class="nav-btn active" onclick="scrollToSection('about')">> about</button>
+                <button class="nav-btn" onclick="scrollToSection('experience')">> work</button>
+                <button class="nav-btn" onclick="scrollToSection('education')">> edu</button>
+                <button class="nav-btn" onclick="scrollToSection('publications')">> pubs</button>
+                <button class="nav-btn" onclick="scrollToSection('skills')">> skills</button>
+                <button class="nav-btn" onclick="scrollToSection('projects')">> projects</button>
+                <button class="print-btn" onclick="window.print()" style="margin-left:auto;">⎙ PDF</button>
+            </div>
 
-                        </div>
-                    </section>
-
-                    {/* Education */}
-                    <section className="mb-12">
-                        <h2 className="section-title">Education</h2>
-                        <div className="space-y-6">
-                            <div className="border-b border-gray-200 pb-6 last:border-b-0">
-                                <h3 className="text-xl font-semibold text-gray-900">Doctoral Degree in Bioinformatics</h3>
-                                <p className="text-red-600"><strong>Stockholm University</strong> | 2015 - 2019</p>
-                                <p className="text-gray-700 mt-2">Thesis: Control Systems Engineering of Biological Networks</p>
-                            </div>
-                            <div className="border-b border-gray-200 pb-6 last:border-b-0">
-                                <h3 className="text-xl font-semibold text-gray-900">Masters of Science Degree in Bioinformatics</h3>
-                                <p className="text-red-600"><strong>Ohio State University</strong> | 2012 - 2014</p>
-                                <p className="text-gray-700 mt-2">Thesis: Biological Networks Clique Merger Algorithm</p>
-                            </div>
-                        </div>
-                    </section>
-
-                    {/* Skills */}
-                    <section className="mb-12">
-                        <h2 className="section-title">Skills</h2>
-                        <div className="flex flex-wrap gap-2">
-                            <span className="skill-tag">Graph-Theory</span>
-                            <span className="skill-tag">Python</span>
-                            <span className="skill-tag">AWS</span>
-                            <span className="skill-tag">RAPIDS/CUDA</span>
-                            <span className="skill-tag">Machine Learning</span>
-                            <span className="skill-tag">Bioinformatics</span>
-                            <span className="skill-tag">Docker</span>
-                        </div>
-                    </section>
-
-                    {/* Side Projects */}
-                    <section className="mb-12">
-                        <h2 className="section-title">Side Projects</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="project-card">
-                                <h3 className="text-lg font-semibold text-gray-900 mb-2">cu-cat</h3>
-                                <p className="text-gray-700 mb-2">An end-to-end GPU feature encoder developed for Graphistry.</p>
-                                <div className="flex flex-wrap gap-1">
-                                    <span className="tech-tag">feature-engineering</span>
-                                    <span className="tech-tag">python</span>
-                                    <span className="tech-tag">RAPIDS</span>
-                                    <span className="tech-tag">CUML/CUDF</span>
-                                    <span className="tech-tag">GPU</span>
-                                    <span className="tech-tag">AI Agents/LLM</span>
-                                </div>
-                                <a href="https://github.com/graphistry/cu-cat/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline mt-2 inline-block">View Project</a>
-                            </div>
-                            <div className="project-card">
-                                <h3 className="text-lg font-semibold text-gray-900 mb-2">Graphistry</h3>
-                                <p className="text-gray-700 mb-2">Graph Visualization built on GPUs.</p>
-                                <div className="flex flex-wrap gap-1">
-                                    <span className="tech-tag">network science</span>
-                                    <span className="tech-tag">python</span>
-                                    <span className="tech-tag">RAPIDS</span>
-                                    <span className="tech-tag">GPU</span>
-                                </div>
-                                <a href="https://graphistry.com/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline mt-2 inline-block">View Project</a>
-                            </div>
-                            <div className="project-card">
-                                <h3 className="text-lg font-semibold text-gray-900 mb-2">NetZoo</h3>
-                                <p className="text-gray-700 mb-2">Message Passing Family of Algorithms for Inferring Biological Networks.</p>
-                                <div className="flex flex-wrap gap-1">
-                                    <span className="tech-tag">python</span>
-                                    <span className="tech-tag">R</span>
-                                    <span className="tech-tag">Bash</span>
-                                </div>
-                                <a href="https://netzoo.github.io/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline mt-2 inline-block">View Project</a>
-                            </div>
-                            <div className="project-card">
-                                <h3 className="text-lg font-semibold text-gray-900 mb-2">Viral_Snake</h3>
-                                <p className="text-gray-700 mb-2">Workflow for viral metagenomics analysis.</p>
-                                <div className="flex flex-wrap gap-1">
-                                    <span className="tech-tag">singularity</span>
-                                    <span className="tech-tag">snakemake</span>
-                                    <span className="tech-tag">bioinformatics</span>
-                                    <span className="tech-tag">python</span>
-                                    <span className="tech-tag">Bash</span>
-                                </div>
-                                <a href="https://github.com/dcolinmorgan/viral_snake" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline mt-2 inline-block">View Project</a>
-                            </div>
-                            <div className="project-card">
-                                <h3 className="text-lg font-semibold text-gray-900 mb-2">GeneSPIDER</h3>
-                                <p className="text-gray-700 mb-2">Platform for synthetic biological data generation and network inference.</p>
-                                <div className="flex flex-wrap gap-1">
-                                    <span className="tech-tag">MATLAB</span>
-                                    <span className="tech-tag">R</span>
-                                    <span className="tech-tag">python</span>
-                                </div>
-                                <a href="https://sonnhammer-tutorials.bitbucket.io/genespider.html" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline mt-2 inline-block">View Project</a>
-                            </div>
-                        </div>
-                    </section>
-                    <footer className="text-center text-gray-400 text-sm mt-16">
-                        <p>© 2026 Daniel C Morgan</p>
-                    </footer>
+            <!-- ABOUT -->
+            <div class="section" id="about">
+                <div class="section-header">/* ABOUT */</div>
+                <div class="shell-line" style="font-size:13px;">
+                    <span class="prompt">dcm@world</span>:<span class="path">~</span>$ <span class="cmd">cat about.txt</span>
                 </div>
-            );
+                <br>
+                <div style="font-size:13px; line-height:1.7;">
+                    <span class="entry-title glitch">Daniel C Morgan</span><br>
+                    <span class="entry-desc">Graph-Based Research Scientist & Engineer</span><br>
+                    <span style="color:var(--dim);">📍 Stockholm, Sweden</span>
+                </div>
+                <br>
+                <div class="entry-desc" id="about-typed"></div>
+                <div class="social-row">
+                    <a href="https://www.linkedin.com/in/dcolinmorgan" target="_blank" class="social-link">[LinkedIn]</a>
+                    <a href="https://github.com/dcolinmorgan" target="_blank" class="social-link">[GitHub]</a>
+                    <a href="https://x.com/dcolinmorgan" target="_blank" class="social-link">[Twitter]</a>
+                </div>
+            </div>
+
+            <!-- EXPERIENCE -->
+            <div class="section" id="experience">
+                <div class="section-header">/* WORK EXPERIENCE */</div>
+                <div class="shell-line" style="font-size:13px;">
+                    <span class="prompt">dcm@world</span>:<span class="path">~/career</span>$ <span class="cmd">ls -la</span>
+                </div>
+                <br>
+                <div class="entry">
+                    <span class="entry-title">Data Scientist</span><br>
+                    <span class="entry-meta">@ Olink Proteomics · Uppsala, SE · 2025 - Present</span><br>
+                    <span class="entry-desc">Investigate & discover platform features & content via AI/ML, utilizing LLMs.</span><br>
+                    <span class="tag">Torch</span><span class="tag">AWS</span><span class="tag">LLMs</span>
+                </div>
+                <div class="entry">
+                    <span class="entry-title">Research Engineer</span><br>
+                    <span class="entry-meta">@ Graphistry · Remote · 2022 - 2024</span><br>
+                    <span class="entry-desc">AI agents with LLMs, GPU-accelerated network analysis toolkit, graph-based ML pipelines.</span><br>
+                    <span class="tag">RAPIDS</span><span class="tag">CUDF</span><span class="tag">CUML</span><span class="tag">Docker</span><span class="tag">K8s</span><span class="tag">AWS</span>
+                </div>
+                <div class="entry">
+                    <span class="entry-title">Research Fellow</span><br>
+                    <span class="entry-meta">@ Hong Kong University · HKSAR · 2021 - 2023</span><br>
+                    <span class="entry-desc">Metagenomics Research Lead.</span><br>
+                    <span class="tag">metagenomics</span><span class="tag">bioinformatics</span>
+                </div>
+                <div class="entry">
+                    <span class="entry-title">Postdoctoral Research Fellow</span><br>
+                    <span class="entry-meta">@ Harvard Medical School · Boston, MA · 2019 - 2021</span><br>
+                    <span class="entry-desc">Epigenetics analysis. Developed NetZoo, implemented GPU speed increases.</span><br>
+                    <span class="tag">Python</span><span class="tag">R</span><span class="tag">Bash</span><span class="tag">GPU</span>
+                </div>
+            </div>
+
+            <!-- EDUCATION -->
+            <div class="section" id="education">
+                <div class="section-header">/* EDUCATION */</div>
+                <div class="shell-line" style="font-size:13px;">
+                    <span class="prompt">dcm@world</span>:<span class="path">~/edu</span>$ <span class="cmd">cat degrees.log</span>
+                </div>
+                <br>
+                <div class="entry">
+                    <span class="entry-title">PhD Bioinformatics</span><br>
+                    <span class="entry-meta">@ Stockholm University · 2015 - 2019</span><br>
+                    <span class="entry-desc">Thesis: Control Systems Engineering of Biological Networks</span>
+                </div>
+                <div class="entry">
+                    <span class="entry-title">MSc Bioinformatics</span><br>
+                    <span class="entry-meta">@ Ohio State University · 2012 - 2014</span><br>
+                    <span class="entry-desc">Thesis: Biological Networks Clique Merger Algorithm</span>
+                </div>
+            </div>
+
+            <!-- PUBLICATIONS -->
+            <div class="section no-print" id="publications">
+                <div class="section-header">/* PUBLICATIONS */</div>
+                <div class="shell-line" style="font-size:13px;">
+                    <span class="prompt">dcm@world</span>:<span class="path">~/pubs</span>$ <span class="cmd">grep -c "cited" scholar.bib</span> <span class="entry-desc">— 176 citations · h-index: 7</span>
+                </div>
+                <br>
+                <div style="margin-bottom:0.75rem;">
+                    <button class="nav-btn active" onclick="sortPubs('citations',this)">sort: citations</button>
+                    <button class="nav-btn" onclick="sortPubs('year',this)">sort: year</button>
+                </div>
+                <div id="pubs-list"></div>
+                <div style="margin-top:1rem;">
+                    <a href="https://scholar.google.com/citations?user=iznLQmYAAAAJ&hl=en" target="_blank" class="social-link">[Google Scholar →]</a>
+                    <a href="https://orcid.org/0000-0001-8326-6178" target="_blank" class="social-link">[ORCID →]</a>
+                </div>
+            </div>
+
+            <!-- SKILLS -->
+            <div class="section no-print" id="skills">
+                <div class="section-header">/* SKILLS */</div>
+                <div class="shell-line" style="font-size:13px;">
+                    <span class="prompt">dcm@world</span>:<span class="path">~/skills</span>$ <span class="cmd">git log --stat | sort -k2 -rn</span>
+                </div>
+                <br>
+                <div style="font-size:11px; color:var(--dim); margin-bottom:0.5rem;">x: years experience · y: proficiency · bubble: relative commit activity</div>
+                <canvas id="skills-chart" style="width:100%; height:340px; border:1px solid var(--dark); background:color-mix(in srgb, var(--primary) 2%, transparent); cursor:crosshair;"></canvas>
+                <div id="skill-tooltip"></div>
+            </div>
+
+            <!-- PROJECTS -->
+            <div class="section no-print" id="projects">
+                <div class="section-header">/* SIDE PROJECTS */</div>
+                <div class="shell-line" style="font-size:13px;">
+                    <span class="prompt">dcm@world</span>:<span class="path">~/projects</span>$ <span class="cmd">find . -type d -maxdepth 1</span>
+                </div>
+                <br>
+                <div style="margin-bottom:0.75rem;">
+                    <button class="nav-btn active" onclick="sortProjects('newest',this)">sort: newest</button>
+                    <button class="nav-btn" onclick="sortProjects('oldest',this)">sort: oldest</button>
+                </div>
+                <div class="project-grid" id="projects-list"></div>
+            </div>
+
+            <div class="section no-print" id="footer" style="text-align:center; margin-top:3rem; margin-bottom:3rem;">
+                <span class="entry-desc">© 2026 Daniel C Morgan · press [t] to change theme</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="status-bar">
+        <span>dcm@world:~ [NORMAL]</span>
+        <span id="theme-label">phosphor ☾ night · [1-6] [t]heme [d]ay/night</span>
+        <span id="clock"></span>
+    </div>
+
+    <script>
+    // ── Theme Engine ──
+    const THEMES = [
+        { name: 'phosphor',  primary:'#00ff41', dim:'#00aa2a', dark:'#003b00', bg:'#0a0a0a', accent1:'#ffb000', accent2:'#00ffff', accent3:'#ff0040' },
+        { name: 'amber',     primary:'#ffb000', dim:'#b87a00', dark:'#3d2800', bg:'#0a0800', accent1:'#ff6600', accent2:'#ffe066', accent3:'#ff4444' },
+        { name: 'cyberpunk', primary:'#ff00ff', dim:'#aa00aa', dark:'#3b003b', bg:'#0a000a', accent1:'#00ffff', accent2:'#ff0080', accent3:'#ffff00' },
+        { name: 'ice',       primary:'#00ccff', dim:'#0088aa', dark:'#002d3b', bg:'#040a0e', accent1:'#88ddff', accent2:'#ffffff', accent3:'#0066ff' },
+        { name: 'blood',     primary:'#ff0040', dim:'#aa002a', dark:'#3b000e', bg:'#0a0002', accent1:'#ff6666', accent2:'#ff8800', accent3:'#ffcc00' },
+        { name: 'solarized', primary:'#859900', dim:'#6b7a00', dark:'#2a3000', bg:'#002b36', accent1:'#b58900', accent2:'#2aa198', accent3:'#dc322f' },
+    ];
+    // Day-mode light variants per theme (bg becomes light, colors darken for contrast)
+    const DAY_OVERRIDES = [
+        { bg:'#f0f4f0', primary:'#007a1e', dim:'#339944', dark:'#c0dcc0', accent1:'#b87a00', accent2:'#007088', accent3:'#cc0033', title:'#111' },
+        { bg:'#fdf6e8', primary:'#8a5a00', dim:'#b87a00', dark:'#e8d8b8', accent1:'#cc5500', accent2:'#6b4e00', accent3:'#cc3333', title:'#1a1000' },
+        { bg:'#f8f0f8', primary:'#990099', dim:'#bb44bb', dark:'#e0c0e0', accent1:'#007088', accent2:'#cc0066', accent3:'#888800', title:'#1a001a' },
+        { bg:'#eef6fa', primary:'#006688', dim:'#338899', dark:'#c0dde8', accent1:'#4488aa', accent2:'#333333', accent3:'#0044aa', title:'#0a1a22' },
+        { bg:'#faf0f0', primary:'#aa0030', dim:'#cc4455', dark:'#e8c0c0', accent1:'#cc4444', accent2:'#aa5500', accent3:'#886600', title:'#1a0008' },
+        { bg:'#fdf6e3', primary:'#586e00', dim:'#6b7a00', dark:'#d6d0a8', accent1:'#8a6800', accent2:'#1a8880', accent3:'#b02020', title:'#002b36' },
+    ];
+    let currentTheme = 0;
+    let dayMode = false;
+    let rainColor = THEMES[0].primary;
+
+    function applyTheme(idx) {
+        currentTheme = idx;
+        const t = THEMES[idx];
+        const r = document.documentElement.style;
+        if (dayMode) {
+            const d = DAY_OVERRIDES[idx];
+            Object.entries({primary:d.primary, dim:d.dim, dark:d.dark, bg:d.bg, accent1:d.accent1, accent2:d.accent2, accent3:d.accent3, title:d.title})
+                .forEach(([k,v]) => r.setProperty('--'+k, v));
+            r.setProperty('--scanline-opacity', '0');
+            r.setProperty('--rain-opacity', '0.02');
+            document.getElementById('crt').style.animation = 'none';
+            rainColor = d.primary;
+        } else {
+            Object.entries({primary:t.primary, dim:t.dim, dark:t.dark, bg:t.bg, accent1:t.accent1, accent2:t.accent2, accent3:t.accent3})
+                .forEach(([k,v]) => r.setProperty('--'+k, v));
+            r.setProperty('--title', '#ffffff');
+            r.setProperty('--scanline-opacity', '1');
+            r.setProperty('--rain-opacity', '0.06');
+            document.getElementById('crt').style.animation = 'flicker 4s infinite';
+            rainColor = t.primary;
+        }
+        updateLabel();
+        // Toast
+        const toast = document.getElementById('theme-toast');
+        toast.textContent = '> ' + (dayMode ? '☀ ' : '☾ ') + THEMES[idx].name;
+        toast.classList.add('show');
+        clearTimeout(toast._tid);
+        toast._tid = setTimeout(() => toast.classList.remove('show'), 1200);
+        localStorage.setItem('dcm-theme', idx);
+        localStorage.setItem('dcm-day', dayMode ? '1' : '0');
+    }
+
+    function toggleDayNight() {
+        dayMode = !dayMode;
+        applyTheme(currentTheme);
+    }
+
+    function updateLabel() {
+        const mode = dayMode ? '☀ day' : '☾ night';
+        document.getElementById('theme-label').textContent =
+            THEMES[currentTheme].name + ' ' + mode + ' · [1-6] [t]heme [d]ay/night';
+    }
+
+    // Restore saved
+    const saved = localStorage.getItem('dcm-theme');
+    const savedDay = localStorage.getItem('dcm-day');
+    if (savedDay === '1') dayMode = true;
+    if (saved !== null) { applyTheme(+saved); } else if (dayMode) { applyTheme(0); }
+
+    // Keyboard handler
+    document.addEventListener('keydown', e => {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+        if (e.key === 't' || e.key === 'T') {
+            applyTheme((currentTheme + 1) % THEMES.length);
+        } else if (e.key === 'd' || e.key === 'D') {
+            toggleDayNight();
+        } else if (e.key >= '1' && e.key <= '6') {
+            applyTheme(+e.key - 1);
+        }
+    });
+
+    // ── Matrix rain ──
+    (function() {
+        const c = document.getElementById('matrix-bg');
+        const ctx = c.getContext('2d');
+        let w, h, cols, drops;
+        const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEF';
+        function resize() {
+            w = c.width = window.innerWidth;
+            h = c.height = window.innerHeight;
+            cols = Math.floor(w / 14);
+            drops = Array(cols).fill(1);
+        }
+        resize();
+        window.addEventListener('resize', resize);
+        function draw() {
+            ctx.fillStyle = 'rgba(10,10,10,0.05)';
+            ctx.fillRect(0, 0, w, h);
+            ctx.fillStyle = rainColor;
+            ctx.font = '12px Fira Code';
+            for (let i = 0; i < cols; i++) {
+                const ch = chars[Math.floor(Math.random() * chars.length)];
+                ctx.fillText(ch, i * 14, drops[i] * 14);
+                if (drops[i] * 14 > h && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+            requestAnimationFrame(draw);
+        }
+        draw();
+    })();
+
+    // ── Floating graph background ──
+    (function() {
+        const c = document.getElementById('graph-bg');
+        const ctx = c.getContext('2d');
+        const dpr = window.devicePixelRatio || 1;
+        const nodes = [
+            {x:.12,y:.20,r:5,s:.7,o:0},{x:.30,y:.12,r:7,s:.5,o:1},{x:.52,y:.28,r:6,s:.8,o:2},
+            {x:.78,y:.15,r:5,s:.6,o:3},{x:.90,y:.35,r:4,s:.9,o:4},{x:.18,y:.50,r:6,s:.4,o:5},
+            {x:.42,y:.55,r:7,s:.6,o:6},{x:.65,y:.48,r:5,s:.7,o:7},{x:.85,y:.60,r:6,s:.5,o:8},
+            {x:.08,y:.78,r:4,s:.8,o:9},{x:.35,y:.82,r:6,s:.5,o:10},{x:.58,y:.75,r:5,s:.7,o:11},
+            {x:.80,y:.85,r:7,s:.4,o:12},{x:.50,y:.42,r:4,s:.9,o:13},
+        ];
+        const edges = [[0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],[5,9],[9,10],[10,11],[11,12],[1,6],[2,7],[6,13],[13,2],[13,7],[10,6],[3,8]];
+        let w, h;
+        function resize() {
+            w = c.offsetWidth; h = c.offsetHeight;
+            c.width = w * dpr; c.height = h * dpr;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+        resize();
+        window.addEventListener('resize', resize);
+        function draw(t) {
+            ctx.clearRect(0, 0, w, h);
+            const style = getComputedStyle(document.documentElement);
+            const primary = style.getPropertyValue('--primary').trim();
+            const accent2 = style.getPropertyValue('--accent2').trim();
+            const pos = nodes.map(n => ({
+                x: n.x * w + Math.sin(t * 0.0004 * n.s + n.o) * 20,
+                y: n.y * h + Math.cos(t * 0.0003 * n.s + n.o * 1.3) * 16,
+                r: n.r, alt: n.o % 3 === 0
+            }));
+            ctx.lineWidth = 0.6;
+            edges.forEach(([a, b]) => {
+                ctx.beginPath();
+                ctx.moveTo(pos[a].x, pos[a].y);
+                ctx.lineTo(pos[b].x, pos[b].y);
+                ctx.strokeStyle = pos[a].alt ? accent2 : primary;
+                ctx.globalAlpha = 0.4;
+                ctx.stroke();
+            });
+            ctx.globalAlpha = 0.7;
+            pos.forEach(p => {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fillStyle = p.alt ? accent2 : primary;
+                ctx.fill();
+            });
+            ctx.globalAlpha = 1;
+            requestAnimationFrame(draw);
+        }
+        requestAnimationFrame(draw);
+    })();
+
+    // ── Boot sequence ──
+    (function() {
+        const bootEl = document.getElementById('boot-text');
+        const terminal = document.getElementById('terminal');
+        const lines = [
+            'BIOS v3.14.159 — DCM Systems Inc.',
+            'Memory Test: 16384 MB OK',
+            'Detecting drives... /dev/graph0 found',
+            'Loading kernel modules...',
+            '  [OK] graph-theory.ko',
+            '  [OK] cuda-runtime.ko',
+            '  [OK] ml-pipeline.ko',
+            '  [OK] bio-networks.ko',
+            'Mounting /home/dcm...',
+            'Starting phosphor-terminal v2.0...',
+            '',
+            '> Welcome, visitor.',
+            '> Initializing portfolio...',
+        ];
+        let i = 0;
+        function typeLine() {
+            if (i < lines.length) {
+                bootEl.textContent += lines[i] + '\n';
+                i++;
+                setTimeout(typeLine, 80 + Math.random() * 60);
+            } else {
+                setTimeout(() => {
+                    document.getElementById('boot').classList.add('hidden');
+                    terminal.classList.add('visible');
+                    revealSections();
+                    animateSkills();
+                    typeAbout();
+                }, 600);
+            }
+        }
+        typeLine();
+    })();
+
+    function revealSections() {
+        const sections = document.querySelectorAll('.section');
+        let delay = 0;
+        sections.forEach(s => {
+            setTimeout(() => s.classList.add('visible'), delay);
+            delay += 200;
+        });
+    }
+
+    function animateSkills() {
+        setTimeout(() => drawSkillsChart(), 1200);
+    }
+
+    // ── 2D Skills Bubble Chart ──
+    // x=years experience, y=proficiency(0-100), r=relative commit activity
+    const SKILLS = [
+        {name:'Python',       yrs:12, prof:95, commits:1800, detail:'Primary language · PyPI packages, ML pipelines, GPU libs'},
+        {name:'Graph Theory', yrs:12, prof:95, commits:900,  detail:'Core research area · GRN inference, network analysis'},
+        {name:'Bioinformatics',yrs:13,prof:92, commits:700,  detail:'PhD + postdoc · genomics, epigenetics, metagenomics'},
+        {name:'Machine Learning',yrs:8,prof:90,commits:600,  detail:'Torch, sklearn, CUML · classification, clustering, GNNs'},
+        {name:'RAPIDS/CUDA',  yrs:5,  prof:85, commits:500,  detail:'GPU-accelerated data science · cuDF, cuML, cuGraph'},
+        {name:'R',            yrs:10, prof:80, commits:400,  detail:'Bioconductor, Shiny, ggplot2 · statistical analysis'},
+        {name:'Docker/K8s',   yrs:5,  prof:80, commits:350,  detail:'Containerized deployments · CI/CD, orchestration'},
+        {name:'AWS',          yrs:5,  prof:80, commits:300,  detail:'EC2, S3, Lambda, SageMaker · cloud infrastructure'},
+        {name:'LLMs/Agents',  yrs:3,  prof:82, commits:450,  detail:'AI agents, RAG pipelines, prompt engineering'},
+        {name:'Bash',         yrs:12, prof:75, commits:500,  detail:'Shell scripting, automation, HPC job scheduling'},
+        {name:'Snakemake',    yrs:4,  prof:70, commits:150,  detail:'Reproducible bioinformatics workflows'},
+        {name:'MATLAB',       yrs:6,  prof:65, commits:200,  detail:'GeneSPIDER platform · numerical computing'},
+    ];
+    const maxCommits = Math.max(...SKILLS.map(s=>s.commits));
+    let bubblePositions = []; // store for hit-testing
+    let hoveredSkill = -1;
+
+    function drawSkillsChart() {
+        const c = document.getElementById('skills-chart');
+        if (!c) return;
+        const dpr = window.devicePixelRatio || 1;
+        const w = c.offsetWidth, h = c.offsetHeight;
+        c.width = w * dpr; c.height = h * dpr;
+        const ctx = c.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        const style = getComputedStyle(document.documentElement);
+        const primary = style.getPropertyValue('--primary').trim();
+        const accent2 = style.getPropertyValue('--accent2').trim();
+        const dim = style.getPropertyValue('--dim').trim();
+        const dark = style.getPropertyValue('--dark').trim();
+
+        const pad = {l:45, r:20, t:15, b:30};
+        const pw = w - pad.l - pad.r, ph = h - pad.t - pad.b;
+        const xMin = 0, xMax = 15, yMin = 50, yMax = 100;
+
+        // Grid
+        ctx.strokeStyle = dark; ctx.lineWidth = 0.5;
+        for (let x = 0; x <= xMax; x += 3) {
+            const px = pad.l + (x - xMin) / (xMax - xMin) * pw;
+            ctx.beginPath(); ctx.moveTo(px, pad.t); ctx.lineTo(px, pad.t + ph); ctx.stroke();
+            ctx.fillStyle = dim; ctx.font = '10px Fira Code'; ctx.textAlign = 'center';
+            ctx.fillText(x + 'y', px, h - 8);
+        }
+        for (let y = yMin; y <= yMax; y += 10) {
+            const py = pad.t + ph - (y - yMin) / (yMax - yMin) * ph;
+            ctx.beginPath(); ctx.moveTo(pad.l, py); ctx.lineTo(pad.l + pw, py); ctx.stroke();
+            ctx.fillStyle = dim; ctx.font = '10px Fira Code'; ctx.textAlign = 'right';
+            ctx.fillText(y + '%', pad.l - 6, py + 3);
         }
 
-        ReactDOM.render(<Resume />, document.getElementById('root'));
+        // Bubbles
+        const now = performance.now();
+        bubblePositions = [];
+        SKILLS.forEach((s, i) => {
+            const px = pad.l + (s.yrs - xMin) / (xMax - xMin) * pw;
+            const py = pad.t + ph - (s.prof - yMin) / (yMax - yMin) * ph;
+            const maxR = 8 + (s.commits / maxCommits) * 28;
+            const elapsed = Math.max(0, now - skillsStart - i * 80);
+            const r = Math.min(maxR, maxR * Math.min(1, elapsed / 600));
+            const isAlt = i % 3 === 0;
+            const isHovered = hoveredSkill === i;
+            const drawR = isHovered ? r * 1.15 : r;
+
+            bubblePositions.push({x: px, y: py, r: maxR, idx: i});
+
+            // Glow
+            ctx.globalAlpha = isHovered ? 0.35 : 0.15;
+            ctx.beginPath(); ctx.arc(px, py, drawR + 6, 0, Math.PI * 2);
+            ctx.fillStyle = isAlt ? accent2 : primary; ctx.fill();
+
+            // Bubble
+            ctx.globalAlpha = isHovered ? 0.95 : 0.7;
+            ctx.beginPath(); ctx.arc(px, py, drawR, 0, Math.PI * 2);
+            ctx.fillStyle = isAlt ? accent2 : primary; ctx.fill();
+
+            // Border
+            ctx.globalAlpha = 1;
+            ctx.beginPath(); ctx.arc(px, py, drawR, 0, Math.PI * 2);
+            ctx.strokeStyle = isAlt ? accent2 : primary;
+            ctx.lineWidth = isHovered ? 2 : 1; ctx.stroke();
+
+            // Label
+            ctx.fillStyle = isAlt ? accent2 : primary;
+            ctx.font = (isHovered ? 'bold ' : '') + (r > 18 ? '10' : '9') + 'px Fira Code';
+            ctx.textAlign = 'center';
+            ctx.fillText(s.name, px, py - drawR - 5);
+        });
+
+        if (now - skillsStart < 2000) requestAnimationFrame(drawSkillsChart);
+    }
+
+    // Hover interaction
+    (function() {
+        const c = document.getElementById('skills-chart');
+        const tip = document.getElementById('skill-tooltip');
+        c.addEventListener('mousemove', function(e) {
+            const rect = c.getBoundingClientRect();
+            const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+            let found = -1;
+            for (let i = bubblePositions.length - 1; i >= 0; i--) {
+                const b = bubblePositions[i];
+                const dx = mx - b.x, dy = my - b.y;
+                if (dx*dx + dy*dy <= (b.r + 5) * (b.r + 5)) { found = i; break; }
+            }
+            if (found !== hoveredSkill) {
+                hoveredSkill = found;
+                skillsStart = 0; drawSkillsChart();
+            }
+            if (found >= 0) {
+                const s = SKILLS[found];
+                tip.innerHTML = '<b>' + s.name + '</b><br>' +
+                    s.yrs + ' yrs · ' + s.prof + '% · ~' + s.commits + ' commits<br>' +
+                    '<span style="color:var(--dim)">' + s.detail + '</span>';
+                tip.classList.add('visible');
+                const tx = e.pageX + 15, ty = e.pageY - 10;
+                tip.style.left = tx + 'px'; tip.style.top = ty + 'px';
+            } else {
+                tip.classList.remove('visible');
+            }
+        });
+        c.addEventListener('mouseleave', function() {
+            hoveredSkill = -1; skillsStart = 0; drawSkillsChart();
+            tip.classList.remove('visible');
+        });
+    })();
+    let skillsStart = 0;
+    const origAnimateSkills = animateSkills;
+    animateSkills = function() {
+        skillsStart = performance.now();
+        drawSkillsChart();
+    };
+    // Redraw on theme change
+    const origApply = applyTheme;
+    applyTheme = function(idx) { origApply(idx); setTimeout(drawSkillsChart, 50); };
+    // Redraw on resize
+    window.addEventListener('resize', () => { skillsStart = 0; drawSkillsChart(); });
+
+    function typeAbout() {
+        const text = "Bioinformaticist turned Engineer. 10+ years working with universities and companies worldwide. Building products that solve real-world problems using graph-based structures and advanced technologies.";
+        const el = document.getElementById('about-typed');
+        let i = 0;
+        el.classList.add('typed-text');
+        function type() {
+            if (i < text.length) {
+                el.textContent += text[i];
+                i++;
+                setTimeout(type, 18);
+            } else {
+                el.classList.add('done');
+            }
+        }
+        setTimeout(type, 1000);
+    }
+
+    function scrollToSection(id) {
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    (function() {
+        function tick() {
+            const d = new Date();
+            document.getElementById('clock').textContent =
+                d.toISOString().slice(0,19).replace('T',' ') + ' UTC';
+        }
+        tick();
+        setInterval(tick, 1000);
+    })();
+
+    // ── Sortable Publications ──
+    const PUBS = [
+        {t:'The Network Zoo: a multilingual package for the inference and analysis of gene regulatory networks',a:'M Ben Guebila, T Wang, CM Lopes-Ramos, V Fanfani, D Weighill, ...',j:'Genome Biology',y:2023,c:39,url:'https://doi.org/10.1186/s13059-023-02853-7'},
+        {t:'Altered human gut virome in patients undergoing antibiotics therapy for Helicobacter pylori',a:'L Wang, H Yao, DC Morgan, KS Lau, SY Leung, JWK Ho, WK Leung',j:'Nature Communications',y:2023,c:31,url:'https://doi.org/10.1038/s41467-023-37975-y'},
+        {t:'Uncovering cancer gene regulation by accurate regulatory network inference from uninformative data',a:'D Seçilmiş, T Hillerton, D Morgan, A Tjärnberg, S Nelander, ...',j:'NPJ Systems Biology and Applications',y:2020,c:25,url:'https://doi.org/10.1038/s41540-020-00158-0'},
+        {t:'GeneSPIDER — Gene regulatory network inference benchmarking with controlled network and data properties',a:'A Tjärnberg, D Morgan, M Studham, TEM Nordling, E Sonnhammer',j:'Molecular Biosystems',y:2017,c:23,url:'https://doi.org/10.1039/C7MB00058H'},
+        {t:'Perturbation-based gene regulatory network inference to unravel oncogenic mechanisms',a:'D Morgan, M Studham, A Tjärnberg, H Weishaupt, FJ Swartling, ...',j:'Scientific Reports',y:2020,c:20,url:'https://doi.org/10.1038/s41598-020-70941-y'},
+        {t:'A generalized framework for controlling FDR in gene regulatory network inference',a:'D Morgan, A Tjärnberg, TEM Nordling, ELL Sonnhammer',j:'Bioinformatics',y:2019,c:18,url:'https://doi.org/10.1093/bioinformatics/bty764'},
+        {t:'Using methylation data to improve transcription factor binding prediction',a:'D Morgan, DL DeMeo, K Glass',j:'Epigenetics',y:2024,c:7,url:'https://doi.org/10.1080/15592294.2024.2309826'},
+        {t:'gpuZoo: Cost-effective estimation of gene regulatory networks using the Graphics Processing Unit',a:'MB Guebila, DC Morgan, K Glass, ML Kuijjer, DL DeMeo, J Quackenbush',j:'NAR Genomics and Bioinformatics',y:2022,c:7,url:'https://doi.org/10.1093/nargab/lqac002'},
+        {t:'GeneSPIDER2: large scale GRN simulation and benchmarking with perturbed single-cell data',a:'M Garbulowski, T Hillerton, D Morgan, D Seçilmiş, ...',j:'NAR Genomics and Bioinformatics',y:2024,c:5,url:'https://doi.org/10.1093/nargab/lqae121'},
+        {t:'MetaQuad: shared informative variants discovery in metagenomic samples',a:'S Xu, DC Morgan, G Qian, Y Huang, JWK Ho',j:'Bioinformatics Advances',y:2024,c:0,url:'https://doi.org/10.1093/bioadv/vbae030'},
+    ];
+    function renderPubs(list) {
+        document.getElementById('pubs-list').innerHTML = list.map(p =>
+            '<div class="entry"><a href="'+p.url+'" target="_blank" style="border-bottom:none;"><span class="entry-title" style="color:var(--title);">'+p.t+'</span></a><br>'+
+            '<span class="entry-meta">'+p.a+' · '+p.j+', '+p.y+'</span><br>'+
+            (p.c ? '<span class="entry-desc">Cited by '+p.c+'</span> · ' : '')+
+            '<a href="'+p.url+'" target="_blank" style="font-size:11px;">→ paper</a></div>'
+        ).join('');
+    }
+    function sortPubs(by, btn) {
+        btn.parentElement.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        const sorted = [...PUBS].sort((a,b) => by==='citations' ? b.c-a.c : b.y-a.y);
+        renderPubs(sorted);
+    }
+    renderPubs([...PUBS].sort((a,b)=>b.c-a.c));
+
+    // ── Sortable Projects ──
+    const PROJECTS = [
+        {name:'cu-cat',desc:'End-to-end GPU feature encoder.',tags:['RAPIDS','CUML','GPU'],url:'https://github.com/graphistry/cu-cat/',year:2023},
+        {name:'Graphistry',desc:'Graph visualization on GPUs.',tags:['network-sci','RAPIDS'],url:'https://graphistry.com/',year:2022},
+        {name:'NetZoo',desc:'Message passing algorithms for bio networks.',tags:['Python','R'],url:'https://netzoo.github.io/',year:2020},
+        {name:'cancer-grn',desc:'Shiny app for network viz & overlap analysis of oncogenic GRNs.',tags:['R','Shiny','igraph'],url:'https://github.com/dcolinmorgan/cancer-grn',year:2020},
+        {name:'Viral_Snake',desc:'Viral metagenomics workflow.',tags:['snakemake','singularity'],url:'https://github.com/dcolinmorgan/viral_snake',year:2021},
+        {name:'pyGS',desc:'Python NestBoot-FDR for gene regulatory network inference benchmarking.',tags:['Python','bootstrap','GRN'],url:'https://github.com/dcolinmorgan/pyGS',year:2024},
+        {name:'mili_benchmark',desc:'Benchmark methylation as proxy to infer TF binding.',tags:['Python','Bash','R','methylation'],url:'https://github.com/dcolinmorgan/mili_benchmark',year:2019},
+        {name:'GeneSPIDER',desc:'Synthetic bio data & network inference.',tags:['MATLAB','R'],url:'https://sonnhammer-tutorials.bitbucket.io/genespider.html',year:2017},
+    ];
+    function renderProjects(list) {
+        document.getElementById('projects-list').innerHTML = list.map(p =>
+            '<div class="project-card"><span class="entry-title">'+p.name+'</span> <span class="entry-desc" style="font-size:10px;">('+p.year+')</span><br>'+
+            '<span class="entry-desc">'+p.desc+'</span><br>'+
+            p.tags.map(t=>'<span class="tag">'+t+'</span>').join('')+'<br>'+
+            '<a href="'+p.url+'" target="_blank">→ repo</a></div>'
+        ).join('');
+    }
+    function sortProjects(by, btn) {
+        btn.parentElement.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        const sorted = [...PROJECTS].sort((a,b) => by==='newest' ? b.year-a.year : a.year-b.year);
+        renderProjects(sorted);
+    }
+    renderProjects([...PROJECTS].sort((a,b)=>b.year-a.year));
+
     </script>
 </body>
 </html>
