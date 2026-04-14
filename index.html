@@ -229,6 +229,7 @@
             .skill-name { width: 100px; font-size: 11px; }
             #skills-chart { height: 260px !important; }
             .status-bar { font-size: 9px; padding: 4px 0.75rem; }
+            .hide-mobile { display: none; }
             .section-header { font-size: 12px; letter-spacing: 1px; }
             .entry { font-size: 12px; }
         }
@@ -569,7 +570,7 @@
 
     <div class="status-bar">
         <span>dcm@world:~ [NORMAL]</span>
-        <span id="theme-label">phosphor ☾ night · [1-6] [t]heme [d]ay/night</span>
+        <span id="theme-label"><span id="theme-cycle" style="cursor:pointer;" onclick="applyTheme((currentTheme+1)%THEMES.length)">phosphor</span> <span id="daynight-toggle" style="cursor:pointer;" onclick="toggleDayNight()">☾ night</span> · <span class="hide-mobile">[1-6] [t]heme [d]ay/night</span></span>
         <span id="clock"></span>
     </div>
 
@@ -635,8 +636,8 @@
 
     function updateLabel() {
         const mode = dayMode ? '☀ day' : '☾ night';
-        document.getElementById('theme-label').textContent =
-            THEMES[currentTheme].name + ' ' + mode + ' · [1-6] [t]heme [d]ay/night';
+        document.getElementById('theme-cycle').textContent = THEMES[currentTheme].name;
+        document.getElementById('daynight-toggle').textContent = mode;
     }
 
     // Restore saved
