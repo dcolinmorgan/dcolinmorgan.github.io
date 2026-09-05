@@ -157,6 +157,18 @@
             text-shadow: 0 0 10px var(--accent2), 0 0 20px color-mix(in srgb, var(--accent2) 30%, transparent);
         }
 
+        /* Compact logo for small screens */
+        .mobile-logo {
+            display: none;
+            text-align: center;
+            font-size: 42px;
+            font-weight: 700;
+            letter-spacing: 6px;
+            color: var(--accent2);
+            margin-bottom: 1rem;
+            text-shadow: 0 0 12px var(--accent2), 0 0 24px color-mix(in srgb, var(--accent2) 30%, transparent);
+        }
+
         .prompt { color: var(--accent2); }
         .path { color: var(--accent1); }
         .cmd { color: var(--primary); }
@@ -221,17 +233,40 @@
         }
         @media (max-width: 600px) {
             .project-grid { grid-template-columns: 1fr; }
-            .ascii-header { font-size: 7px; }
-            #terminal { padding: 1rem 0.75rem; }
-            .nav { gap: 0.3rem; }
-            .nav-btn { font-size: 11px; padding: 3px 8px; }
-            .social-row { gap: 0.5rem; }
+            .ascii-header { display: none; }
+            .mobile-logo { display: block; }
+            #terminal { padding: 1rem 0.9rem 5rem; }
+            .nav {
+                gap: 0.4rem;
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+            }
+            .nav::-webkit-scrollbar { display: none; }
+            .nav-btn { font-size: 12px; padding: 8px 12px; white-space: nowrap; flex: 0 0 auto; }
+            .print-btn { padding: 8px 12px; }
+            .social-row { gap: 0.6rem; }
+            .social-link { padding: 8px 14px; }
             .skill-name { width: 100px; font-size: 11px; }
-            #skills-chart { height: 260px !important; }
-            .status-bar { font-size: 9px; padding: 4px 0.75rem; }
+            #skills-chart { height: 300px !important; }
+            .status-bar {
+                font-size: 11px;
+                padding: 8px 0.9rem;
+                gap: 0.5rem;
+            }
+            #theme-cycle, #daynight-toggle { padding: 2px 4px; }
             .hide-mobile { display: none; }
-            .section-header { font-size: 12px; letter-spacing: 1px; }
-            .entry { font-size: 12px; }
+            #clock { display: none; }
+            .section-header { font-size: 13px; letter-spacing: 1px; }
+            .entry { font-size: 13px; }
+            .section { margin-bottom: 2rem; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            #crt { animation: none !important; }
+            .glitch:hover { animation: none; }
+            * { transition: none !important; }
         }
 
         /* Print button */
@@ -434,6 +469,7 @@
 | |_| | |___| |  | |
 |____/ \____|_|  |_|
             </pre>
+            <div class="mobile-logo">DCM<span class="cursor"></span></div>
 
             <div class="nav">
                 <button class="nav-btn active" onclick="scrollToSection('about')">> about</button>
@@ -563,7 +599,18 @@
             </div>
 
             <div class="section no-print" id="footer" style="text-align:center; margin-top:3rem; margin-bottom:3rem;">
-                <span class="entry-desc">© 2026 Daniel C Morgan · press [t] to change theme</span>
+                <span class="entry-desc">© 2026 Daniel C Morgan · press [t] to change theme · type <span style="color:var(--accent2);">help</span> below</span>
+            </div>
+
+            <!-- INTERACTIVE PROMPT -->
+            <div class="section no-print" id="shell" style="margin-bottom:4rem;">
+                <div id="shell-output" style="font-size:13px; line-height:1.6;"></div>
+                <div class="shell-input-line" style="font-size:13px; display:flex; align-items:center; gap:0.4rem;">
+                    <span class="prompt">dcm@world</span>:<span class="path">~</span>$
+                    <input id="shell-input" type="text" autocomplete="off" spellcheck="false"
+                        aria-label="terminal command input"
+                        style="flex:1; background:none; border:none; outline:none; color:var(--primary); font-family:'Fira Code',monospace; font-size:13px; caret-color:var(--primary);">
+                </div>
             </div>
         </div>
     </div>
@@ -662,12 +709,13 @@
     (function() {
         const c = document.getElementById('matrix-bg');
         const ctx = c.getContext('2d');
-        let w, h, cols, drops;
+        let w, h, cols, drops, step;
         const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEF';
         function resize() {
             w = c.width = window.innerWidth;
             h = c.height = window.innerHeight;
-            cols = Math.floor(w / 14);
+            step = w < 600 ? 20 : 14;
+            cols = Math.floor(w / step);
             drops = Array(cols).fill(1);
         }
         resize();
@@ -679,8 +727,8 @@
             ctx.font = '12px Fira Code';
             for (let i = 0; i < cols; i++) {
                 const ch = chars[Math.floor(Math.random() * chars.length)];
-                ctx.fillText(ch, i * 14, drops[i] * 14);
-                if (drops[i] * 14 > h && Math.random() > 0.975) drops[i] = 0;
+                ctx.fillText(ch, i * step, drops[i] * step);
+                if (drops[i] * step > h && Math.random() > 0.975) drops[i] = 0;
                 drops[i]++;
             }
             requestAnimationFrame(draw);
@@ -830,6 +878,8 @@
         const pad = {l:45, r:20, t:15, b:30};
         const pw = w - pad.l - pad.r, ph = h - pad.t - pad.b;
         const xMin = 0, xMax = 15, yMin = 50, yMax = 100;
+        const isNarrow = w < 480;
+        const rScale = isNarrow ? 0.6 : 1;
 
         // Grid
         ctx.strokeStyle = dark; ctx.lineWidth = 0.5;
@@ -852,7 +902,7 @@
         SKILLS.forEach((s, i) => {
             const px = pad.l + (s.yrs - xMin) / (xMax - xMin) * pw;
             const py = pad.t + ph - (s.prof - yMin) / (yMax - yMin) * ph;
-            const maxR = 8 + (s.commits / maxCommits) * 28;
+            const maxR = (8 + (s.commits / maxCommits) * 28) * rScale;
             const elapsed = Math.max(0, now - skillsStart - i * 80);
             const r = Math.min(maxR, maxR * Math.min(1, elapsed / 600));
             const isAlt = i % 3 === 0;
@@ -879,7 +929,7 @@
 
             // Label
             ctx.fillStyle = isAlt ? accent2 : primary;
-            ctx.font = (isHovered ? 'bold ' : '') + (r > 18 ? '10' : '9') + 'px Fira Code';
+            ctx.font = (isHovered ? 'bold ' : '') + (isNarrow ? '8' : (r > 18 ? '10' : '9')) + 'px Fira Code';
             ctx.textAlign = 'center';
             ctx.fillText(s.name, px, py - drawR - 5);
         });
@@ -997,10 +1047,11 @@
 
     // ── Sortable Projects ──
     const PROJECTS = [
+        {name:'herdr-remote',desc:'Agent dashboard for herdr.dev — monitor & control local AI coding agents from menu bar, phone, or Telegram.',tags:['Python','Swift','WebSocket','PWA'],url:'https://github.com/dcolinmorgan/herdr-remote',year:2025},
         {name:'cu-cat',desc:'End-to-end GPU feature encoder.',tags:['RAPIDS','CUML','GPU'],url:'https://github.com/graphistry/cu-cat/',year:2023},
         {name:'Graphistry',desc:'Graph visualization on GPUs.',tags:['network-sci','RAPIDS'],url:'https://graphistry.com/',year:2022},
         {name:'NetZoo',desc:'Message passing algorithms for bio networks.',tags:['Python','R'],url:'https://netzoo.github.io/',year:2020},
-        {name:'cancer-grn',desc:'Shiny app for network viz & overlap analysis of oncogenic GRNs.',tags:['R','Shiny','igraph'],url:'https://github.com/dcolinmorgan/cancer-grn',year:2020},
+        {name:'cancer-grn',desc:'Shiny app for network viz & overlap analysis of oncogenic GRNs.',tags:['R','Shiny','igraph'],url:'https://github.com/dcolinmorgan/cancer-grn',live:'https://dcolin.shinyapps.io/cancergrn/',year:2020},
         {name:'Viral_Snake',desc:'Viral metagenomics workflow.',tags:['snakemake','singularity'],url:'https://github.com/dcolinmorgan/viral_snake',year:2021},
         {name:'pyGS',desc:'Python NestBoot-FDR for gene regulatory network inference benchmarking.',tags:['Python','bootstrap','GRN'],url:'https://github.com/dcolinmorgan/pyGS',year:2024},
         {name:'mili_benchmark',desc:'Benchmark methylation as proxy to infer TF binding.',tags:['Python','Bash','R','methylation'],url:'https://github.com/dcolinmorgan/mili_benchmark',year:2019},
@@ -1011,7 +1062,8 @@
             '<div class="project-card"><span class="entry-title">'+p.name+'</span> <span class="entry-desc" style="font-size:10px;">('+p.year+')</span><br>'+
             '<span class="entry-desc">'+p.desc+'</span><br>'+
             p.tags.map(t=>'<span class="tag">'+t+'</span>').join('')+'<br>'+
-            '<a href="'+p.url+'" target="_blank">→ repo</a></div>'
+            '<a href="'+p.url+'" target="_blank">→ repo</a>'+
+            (p.live ? ' · <a href="'+p.live+'" target="_blank">→ live</a>' : '')+'</div>'
         ).join('');
     }
     function sortProjects(by, btn) {
@@ -1021,6 +1073,168 @@
         renderProjects(sorted);
     }
     renderProjects([...PROJECTS].sort((a,b)=>b.year-a.year));
+
+    // ── fastfetch-style system card (#4) ──
+    function neofetch() {
+        const yrs = new Date().getFullYear() - 2012;
+        const logo = [
+            ' ____   ____ __  __',
+            '|  _ \\ / ___|  \\/  |',
+            '| | | | |   | |\\/| |',
+            '| |_| | |___| |  | |',
+            '|____/ \\____|_|  |_|',
+        ];
+        const info = [
+            ['dcm', '@world'],
+            ['-----', ''],
+            ['OS', 'PortfolioOS ' + new Date().getFullYear() + ' (phosphor)'],
+            ['Host', 'Stockholm, Sweden'],
+            ['Kernel', 'graph-theory 6.02e23'],
+            ['Uptime', yrs + ' years, still compiling'],
+            ['Shell', '/bin/dcm'],
+            ['Role', 'Graph-Based Research Scientist & Engineer'],
+            ['Packages', PROJECTS.length + ' side-projects, ' + PUBS.length + ' papers'],
+            ['Theme', THEMES[currentTheme].name + ' [' + (dayMode?'day':'night') + ']'],
+            ['CPU', 'Bioinformatics → Engineering'],
+            ['Memory', '176 citations · h-index 7'],
+        ];
+        let out = '<div style="display:flex; gap:1.5rem; flex-wrap:wrap;">';
+        out += '<pre style="color:var(--accent2); margin:0;">' + logo.join('\n') + '</pre>';
+        out += '<div>' + info.map(([k,v]) => v === ''
+            ? (k.startsWith('-') ? '<span class="entry-desc">'+k+'</span>' : '<span style="color:var(--accent1);">'+k+'</span>')
+            : '<span style="color:var(--accent1);">'+k+'</span>: <span class="entry-desc">'+v+'</span>'
+        ).join('<br>') + '</div>';
+        out += '</div>';
+        return out;
+    }
+
+    // ── Interactive shell (#1) ──
+    (function() {
+        const input = document.getElementById('shell-input');
+        const outEl = document.getElementById('shell-output');
+        const history = [];
+        let histIdx = -1;
+
+        function print(html) {
+            const div = document.createElement('div');
+            div.style.marginBottom = '0.5rem';
+            div.innerHTML = html;
+            outEl.appendChild(div);
+        }
+        function echo(cmd) {
+            print('<span class="prompt">dcm@world</span>:<span class="path">~</span>$ <span class="cmd">' + escapeHtml(cmd) + '</span>');
+        }
+        function escapeHtml(s) {
+            return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        }
+
+        const COMMANDS = {
+            help: () => 'Available commands:<br>' + [
+                'about        — who is dcm',
+                'whoami       — short answer',
+                'neofetch     — system info card',
+                'ls           — list sections',
+                'cd <section> — jump to section (work, edu, pubs, skills, projects)',
+                'projects     — list side projects',
+                'pubs         — list publications',
+                'skills       — list skills',
+                'theme <name> — ' + THEMES.map(t=>t.name).join(', '),
+                'day / night  — toggle day mode',
+                'social       — links',
+                'date         — current time',
+                'clear        — clear the screen',
+                'sudo         — try it',
+            ].map(l => '&nbsp;&nbsp;' + l).join('<br>'),
+            about: () => 'Daniel C Morgan — Graph-Based Research Scientist & Engineer, Stockholm SE.<br>Bioinformaticist turned Engineer. 10+ years across universities and companies worldwide.',
+            whoami: () => 'dcm — he builds products that solve real problems with graph-based structures.',
+            neofetch: () => neofetch(),
+            ls: () => ['about','work','edu','pubs','skills','projects'].map(s=>'<span class="path">'+s+'/</span>').join('&nbsp;&nbsp;'),
+            projects: () => PROJECTS.slice().sort((a,b)=>b.year-a.year).map(p =>
+                '<span class="entry-title">'+p.name+'</span> ('+p.year+') — <span class="entry-desc">'+p.desc+'</span>').join('<br>'),
+            pubs: () => PUBS.slice().sort((a,b)=>b.c-a.c).map(p =>
+                '<span class="entry-desc">['+p.y+']</span> '+p.t+' <span class="entry-meta">('+p.c+' cites)</span>').join('<br>'),
+            skills: () => SKILLS.map(s=>'<span class="entry-title">'+s.name+'</span> <span class="entry-desc">'+s.yrs+'y · '+s.prof+'%</span>').join('<br>'),
+            social: () => 'LinkedIn: <a href="https://www.linkedin.com/in/dcolinmorgan" target="_blank">linkedin.com/in/dcolinmorgan</a><br>'+
+                'GitHub: <a href="https://github.com/dcolinmorgan" target="_blank">github.com/dcolinmorgan</a><br>'+
+                'Twitter: <a href="https://x.com/dcolinmorgan" target="_blank">x.com/dcolinmorgan</a>',
+            date: () => new Date().toISOString().slice(0,19).replace('T',' ') + ' UTC',
+            day: () => { if (!dayMode) toggleDayNight(); return 'day mode on'; },
+            night: () => { if (dayMode) toggleDayNight(); return 'night mode on'; },
+            sudo: () => '<span style="color:var(--accent3);">dcm is not in the sudoers file. This incident will be reported.</span>',
+            clear: () => { outEl.innerHTML = ''; return null; },
+        };
+        const SECTION_MAP = {work:'experience', edu:'education', pubs:'publications', skills:'skills', projects:'projects', about:'about'};
+
+        function run(raw) {
+            const line = raw.trim();
+            if (!line) return;
+            echo(line);
+            history.unshift(line); histIdx = -1;
+            const [cmd, ...args] = line.split(/\s+/);
+            const arg = args.join(' ').toLowerCase();
+
+            if (cmd === 'cd') {
+                const id = SECTION_MAP[arg];
+                if (id) { document.getElementById(id).scrollIntoView({behavior:'smooth'}); print('→ '+arg); }
+                else print('<span style="color:var(--accent3);">cd: no such section: '+escapeHtml(arg)+'</span>');
+                return;
+            }
+            if (cmd === 'cat') {
+                if (arg.includes('about')) { print(COMMANDS.about()); return; }
+                print('<span style="color:var(--accent3);">cat: '+escapeHtml(arg)+': No such file</span>'); return;
+            }
+            if (cmd === 'theme') {
+                const i = THEMES.findIndex(t => t.name === arg);
+                if (i >= 0) { applyTheme(i); print('theme → '+arg); }
+                else print('<span style="color:var(--accent3);">theme: unknown \''+escapeHtml(arg)+'\'. Try: '+THEMES.map(t=>t.name).join(', ')+'</span>');
+                return;
+            }
+            const fn = COMMANDS[cmd];
+            if (fn) { const r = fn(); if (r !== null) print(r); }
+            else print('<span style="color:var(--accent3);">command not found: '+escapeHtml(cmd)+'</span> — type <span style="color:var(--accent2);">help</span>');
+        }
+
+        input.addEventListener('keydown', e => {
+            if (e.key === 'Enter') {
+                run(input.value); input.value = '';
+                input.scrollIntoView({behavior:'smooth', block:'nearest'});
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (histIdx < history.length - 1) { histIdx++; input.value = history[histIdx]; }
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (histIdx > 0) { histIdx--; input.value = history[histIdx]; }
+                else { histIdx = -1; input.value = ''; }
+            }
+        });
+        // Focus prompt when clicking anywhere in the shell section
+        document.getElementById('shell').addEventListener('click', () => input.focus());
+    })();
+
+    // ── Konami code easter egg (#2) ──
+    (function() {
+        const seq = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+        let pos = 0;
+        document.addEventListener('keydown', e => {
+            if (e.target.tagName === 'INPUT') return;
+            const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+            pos = (key === seq[pos]) ? pos + 1 : (key === seq[0] ? 1 : 0);
+            if (pos === seq.length) { pos = 0; unlock(); }
+        });
+        function unlock() {
+            const toast = document.getElementById('theme-toast');
+            toast.textContent = '> ░▒▓ GOD MODE ↓→← ▓▒░';
+            toast.classList.add('show');
+            clearTimeout(toast._tid);
+            toast._tid = setTimeout(() => toast.classList.remove('show'), 2500);
+            // rapid theme flash, then land on cyberpunk
+            let n = 0;
+            const flash = setInterval(() => {
+                applyTheme(n % THEMES.length); n++;
+                if (n > 12) { clearInterval(flash); applyTheme(2); }
+            }, 90);
+        }
+    })();
 
     </script>
 </body>
