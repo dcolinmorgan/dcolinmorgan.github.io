@@ -622,8 +622,8 @@
     </div>
 
     <div class="status-bar">
-        <span>dcm@world:~ [NORMAL]</span>
-        <span id="theme-label"><span id="theme-cycle" style="cursor:pointer;" onclick="applyTheme((currentTheme+1)%THEMES.length)">phosphor</span> <span id="daynight-toggle" style="cursor:pointer;" onclick="toggleDayNight()">☾ night</span> · <span class="hide-mobile">[1-6] [t]heme [d]ay/night</span></span>
+        <span>dcm@world:~ <span id="vim-mode">[NORMAL]</span></span>
+        <span id="theme-label"><span id="theme-cycle" style="cursor:pointer;" onclick="applyTheme((currentTheme+1)%THEMES.length)">phosphor</span> <span id="daynight-toggle" style="cursor:pointer;" onclick="toggleDayNight()">☾ night</span> · <span class="hide-mobile">[i]nsert [1-6] [t]heme [d]ay/night</span></span>
         <span id="clock"></span>
     </div>
 
@@ -700,9 +700,22 @@
     if (saved !== null) { applyTheme(+saved); } else if (dayMode) { applyTheme(0); }
 
     // Keyboard handler
+    // ── Vim-style mode indicator ──
+    function setMode(m) {
+        const el = document.getElementById('vim-mode');
+        el.textContent = '[' + m + ']';
+        el.style.color = m === 'INSERT' ? 'var(--accent1)' : '';
+    }
+
     document.addEventListener('keydown', e => {
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-        if (e.key === 't' || e.key === 'T') {
+        if (e.key === 'i' || e.key === '/') {
+            e.preventDefault();
+            setMode('INSERT');
+            const inp = document.getElementById('shell-input');
+            inp.scrollIntoView({behavior:'smooth', block:'center'});
+            inp.focus();
+        } else if (e.key === 't' || e.key === 'T') {
             applyTheme((currentTheme + 1) % THEMES.length);
         } else if (e.key === 'd' || e.key === 'D') {
             toggleDayNight();
@@ -1261,7 +1274,9 @@
         }
 
         input.addEventListener('keydown', e => {
-            if (e.key === 'Enter') {
+            if (e.key === 'Escape') {
+                input.blur();
+            } else if (e.key === 'Enter') {
                 run(input.value); input.value = '';
                 input.scrollIntoView({behavior:'smooth', block:'nearest'});
             } else if (e.key === 'ArrowUp') {
@@ -1273,6 +1288,8 @@
                 else { histIdx = -1; input.value = ''; }
             }
         });
+        input.addEventListener('focus', () => setMode('INSERT'));
+        input.addEventListener('blur', () => setMode('NORMAL'));
         // Focus prompt when clicking anywhere in the shell section
         document.getElementById('shell').addEventListener('click', () => input.focus());
     })();
