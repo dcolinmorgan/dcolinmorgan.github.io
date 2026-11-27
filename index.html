@@ -1,1339 +1,958 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>dcm@world:~$ whoami</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #00ff41;
-            --dim: #00aa2a;
-            --dark: #003b00;
-            --bg: #0a0a0a;
-            --accent1: #ffb000;
-            --accent2: #00ffff;
-            --accent3: #ff0040;
-            --title: #ffffff;
-            --scanline-opacity: 1;
-            --rain-opacity: 0.06;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Daniel C Morgan — Computational Biologist at Root Bio</title>
+  <meta name="description" content="Daniel C Morgan is a computational biologist at Root Bio in Stockholm. Graph-based research scientist and engineer working on biological networks, GPU methods, and small-molecule discovery.">
+  <meta name="author" content="Daniel C Morgan">
+  <link rel="canonical" href="https://dcolinmorgan.github.io/">
+  <meta name="theme-color" content="#0b0f14">
 
-        * { margin: 0; padding: 0; box-sizing: border-box; transition: color 0.4s, background-color 0.4s, border-color 0.4s, box-shadow 0.4s, text-shadow 0.4s; }
+  <meta property="og:type" content="profile">
+  <meta property="og:title" content="Daniel C Morgan — Computational Biologist at Root Bio">
+  <meta property="og:description" content="Bioinformaticist turned engineer. Graph-based research scientist and engineer in Stockholm, at Root Bio.">
+  <meta property="og:url" content="https://dcolinmorgan.github.io/">
+  <meta property="og:site_name" content="Daniel C Morgan">
+  <meta property="profile:first_name" content="Daniel">
+  <meta property="profile:last_name" content="Morgan">
 
-        body {
-            font-family: 'Fira Code', monospace;
-            background: var(--bg);
-            color: var(--primary);
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:creator" content="@dcolinmorgan">
+  <meta name="twitter:title" content="Daniel C Morgan — Computational Biologist at Root Bio">
+  <meta name="twitter:description" content="Bioinformaticist turned engineer. Graph-based research scientist and engineer in Stockholm, at Root Bio.">
 
-        /* Theme toast */
-        #theme-toast {
-            position: fixed;
-            top: 1.5rem;
-            right: 1.5rem;
-            background: var(--dark);
-            border: 1px solid var(--primary);
-            color: var(--primary);
-            font-family: 'Fira Code', monospace;
-            font-size: 12px;
-            padding: 8px 16px;
-            z-index: 3000;
-            opacity: 0;
-            transform: translateY(-10px);
-            transition: opacity 0.3s, transform 0.3s;
-            pointer-events: none;
-            box-shadow: 0 0 15px color-mix(in srgb, var(--primary) 20%, transparent);
-        }
-        #theme-toast.show { opacity: 1; transform: translateY(0); }
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23151b24'/%3E%3Ctext x='5' y='22' font-family='ui-monospace,monospace' font-size='15' fill='%239ecbff'%3E%24_%3C/text%3E%3C/svg%3E">
 
-        /* CRT + Scanline overlay */
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background: repeating-linear-gradient(
-                0deg,
-                rgba(0,0,0,0.15) 0px,
-                rgba(0,0,0,0.15) 1px,
-                transparent 1px,
-                transparent 2px
-            );
-            pointer-events: none;
-            z-index: 1000;
-            opacity: var(--scanline-opacity);
-            transition: opacity 0.4s;
-        }
-        body::after {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.6) 100%);
-            pointer-events: none;
-            z-index: 999;
-            opacity: var(--scanline-opacity);
-            transition: opacity 0.4s;
-        }
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Daniel C Morgan",
+    "url": "https://dcolinmorgan.github.io/",
+    "jobTitle": "Lead Computational Biologist",
+    "description": "Bioinformaticist turned Engineer. 10+ years working with universities and companies worldwide. Building products that solve real-world problems using graph-based structures and advanced technologies.",
+    "homeLocation": {
+      "@type": "Place",
+      "name": "Stockholm, Sweden"
+    },
+    "worksFor": {
+      "@type": "Organization",
+      "name": "RootBio",
+      "url": "https://rootbio.ai"
+    },
+    "alumniOf": [
+      { "@type": "CollegeOrUniversity", "name": "Stockholm University" },
+      { "@type": "CollegeOrUniversity", "name": "Ohio State University" }
+    ],
+    "knowsAbout": [
+      "Gene regulatory networks",
+      "Graph-based biological networks",
+      "GPU-accelerated data analysis",
+      "Small-molecule discovery",
+      "Metagenomics",
+      "Epigenetics"
+    ],
+    "sameAs": [
+      "https://github.com/dcolinmorgan",
+      "https://scholar.google.com/citations?user=iznLQmYAAAAJ&hl=en",
+      "https://orcid.org/0000-0001-8326-6178",
+      "https://www.linkedin.com/in/dcolinmorgan",
+      "https://x.com/dcolinmorgan",
+      "https://graffold.com"
+    ]
+  }
+  </script>
 
-        /* Flicker */
-        @keyframes flicker {
-            0%, 100% { opacity: 1; }
-            92% { opacity: 1; }
-            93% { opacity: 0.8; }
-            94% { opacity: 1; }
-            96% { opacity: 0.9; }
-            97% { opacity: 1; }
-        }
+  <script>
+    (function () {
+      try {
+        document.documentElement.classList.remove("no-js");
+        var t = localStorage.getItem("dcm-appearance");
+        if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t);
+      } catch (e) {}
+    })();
+  </script>
 
-        #crt { animation: flicker 4s infinite; }
+  <style>
+    :root {
+      --bg: #0b0f14;
+      --window: #151b24;
+      --chrome: #10161e;
+      --text: #e8eef6;
+      --muted: #b4c0cf;
+      --faint: #93a3b5;
+      --line: #2c3848;
+      --blue: #9ecbff;
+      --green: #9ee0b8;
+      --amber: #f0c97a;
+      --violet: #d4b6f8;
+      --coral: #f3b59a;
+      --hover: rgba(158, 203, 255, 0.08);
+      --chip: rgba(158, 224, 184, 0.08);
+      --select: #9ecbff;
+      --select-text: #0b0f14;
+      --shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+      --glow: rgba(158, 203, 255, 0.16);
+      --glow-2: rgba(212, 182, 248, 0.12);
+      color-scheme: dark;
+    }
 
-        /* Boot screen */
-        #boot {
-            position: fixed;
-            inset: 0;
-            background: var(--bg);
-            z-index: 2000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            transition: opacity 0.5s;
-        }
-        #boot.hidden { opacity: 0; pointer-events: none; }
-        #boot-text {
-            font-size: 14px;
-            white-space: pre;
-            line-height: 1.6;
-            text-align: left;
-            max-width: 700px;
-        }
+    @media (prefers-color-scheme: light) {
+      :root:not([data-theme="dark"]) {
+        --bg: #e7e1d6;
+        --window: #fbf8f3;
+        --chrome: #f3eee6;
+        --text: #1c1915;
+        --muted: #4a453e;
+        --faint: #5c564e;
+        --line: #ddd4c6;
+        --blue: #0f4f86;
+        --green: #14663a;
+        --amber: #7a4a05;
+        --violet: #62358a;
+        --coral: #8a3d22;
+        --hover: rgba(15, 79, 134, 0.07);
+        --chip: rgba(20, 102, 58, 0.08);
+        --select: #0f4f86;
+        --select-text: #fbf8f3;
+        --shadow: 0 18px 40px rgba(60, 42, 20, 0.12);
+        --glow: rgba(15, 79, 134, 0.09);
+        --glow-2: rgba(98, 53, 138, 0.07);
+        color-scheme: light;
+      }
+    }
 
-        /* Glitch */
-        @keyframes glitch {
-            0%, 100% { transform: translate(0); }
-            20% { transform: translate(-2px, 1px); }
-            40% { transform: translate(2px, -1px); }
-            60% { transform: translate(-1px, -2px); }
-            80% { transform: translate(1px, 2px); }
-        }
-        @keyframes glitch-color {
-            0%, 100% { text-shadow: 2px 0 var(--accent2), -2px 0 var(--accent3); }
-            25% { text-shadow: -2px 0 var(--accent2), 2px 0 var(--accent3); }
-            50% { text-shadow: 2px 2px var(--accent2), -2px -2px var(--accent3); }
-            75% { text-shadow: -2px 2px var(--accent3), 2px -2px var(--accent2); }
-        }
-        .glitch:hover {
-            animation: glitch 0.3s infinite, glitch-color 0.3s infinite;
-        }
+    :root[data-theme="light"] {
+      --bg: #e7e1d6;
+      --window: #fbf8f3;
+      --chrome: #f3eee6;
+      --text: #1c1915;
+      --muted: #4a453e;
+      --faint: #5c564e;
+      --line: #ddd4c6;
+      --blue: #0f4f86;
+      --green: #14663a;
+      --amber: #7a4a05;
+      --violet: #62358a;
+      --coral: #8a3d22;
+      --hover: rgba(15, 79, 134, 0.07);
+      --chip: rgba(20, 102, 58, 0.08);
+      --select: #0f4f86;
+      --select-text: #fbf8f3;
+      --shadow: 0 18px 40px rgba(60, 42, 20, 0.12);
+      --glow: rgba(15, 79, 134, 0.09);
+      --glow-2: rgba(98, 53, 138, 0.07);
+      color-scheme: light;
+    }
 
-        /* Cursor blink */
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-        .cursor::after {
-            content: '█';
-            animation: blink 1s step-end infinite;
-            color: var(--primary);
-        }
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+    }
 
-        /* Main layout */
-        #terminal {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 2rem 1.5rem;
-            opacity: 0;
-            transition: opacity 0.8s;
-        }
-        #terminal.visible { opacity: 1; }
+    * { box-sizing: border-box; }
 
-        /* ASCII header */
-        .ascii-header {
-            font-size: 10px;
-            line-height: 1.2;
-            color: var(--accent2);
-            text-align: center;
-            margin-bottom: 1rem;
-            white-space: pre;
-            text-shadow: 0 0 10px var(--accent2), 0 0 20px color-mix(in srgb, var(--accent2) 30%, transparent);
-        }
+    html { scroll-behavior: auto; }
 
-        /* Compact logo for small screens */
-        .mobile-logo {
-            display: none;
-            text-align: center;
-            font-size: 42px;
-            font-weight: 700;
-            letter-spacing: 6px;
-            color: var(--accent2);
-            margin-bottom: 1rem;
-            text-shadow: 0 0 12px var(--accent2), 0 0 24px color-mix(in srgb, var(--accent2) 30%, transparent);
-        }
+    @media (prefers-reduced-motion: no-preference) {
+      html { scroll-behavior: smooth; }
+    }
 
-        .prompt { color: var(--accent2); }
-        .path { color: var(--accent1); }
-        .cmd { color: var(--primary); }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(ellipse 90% 50% at 0% -10%, var(--glow), transparent 55%),
+        radial-gradient(ellipse 70% 45% at 100% 0%, var(--glow-2), transparent 50%),
+        var(--bg);
+      color: var(--text);
+      font-family: "JetBrains Mono", "Cascadia Mono", "Cascadia Code", "SFMono-Regular", ui-monospace, "DejaVu Sans Mono", "Liberation Mono", Menlo, Consolas, monospace;
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
 
-        /* Section blocks */
-        .section {
-            margin-bottom: 2.5rem;
-            opacity: 0;
-            transform: translateY(10px);
-            transition: all 0.5s ease;
-        }
-        .section.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
+    ::selection {
+      background: var(--select);
+      color: var(--select-text);
+    }
 
-        .section-header {
-            color: var(--accent1);
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 0.75rem;
-            border-bottom: 1px solid var(--dark);
-            padding-bottom: 0.25rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
+    .skip {
+      position: absolute;
+      left: 0.75rem;
+      top: 0.75rem;
+      padding: 0.45rem 0.7rem;
+      background: var(--window);
+      color: var(--text);
+      border: 1px solid var(--blue);
+      border-radius: 6px;
+      z-index: 5;
+      transform: translateY(-150%);
+    }
 
-        .entry { margin-bottom: 1.25rem; font-size: 13px; line-height: 1.6; }
-        .entry-title { color: var(--title); font-weight: 600; }
-        .entry-meta { color: var(--accent3); font-size: 12px; }
-        .entry-desc { color: var(--dim); font-size: 12px; }
+    .skip:focus {
+      transform: none;
+    }
 
-        /* Tags */
-        .tag {
-            display: inline-block;
-            border: 1px solid var(--dark);
-            color: var(--primary);
-            font-size: 11px;
-            padding: 1px 8px;
-            margin: 2px 3px 2px 0;
-            background: color-mix(in srgb, var(--primary) 5%, transparent);
-        }
+    a {
+      color: var(--blue);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 0.18em;
+    }
 
-        /* Links */
-        a {
-            color: var(--accent2);
-            text-decoration: none;
-            border-bottom: 1px dashed var(--dark);
-            transition: all 0.2s;
-        }
-        a:hover {
-            color: var(--title);
-            text-shadow: 0 0 8px var(--accent2);
-            border-bottom-color: var(--accent2);
-        }
+    a:hover { text-decoration-thickness: 2px; }
 
-        /* Project grid */
-        .project-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-        @media (max-width: 600px) {
-            .project-grid { grid-template-columns: 1fr; }
-            .ascii-header { display: none; }
-            .mobile-logo { display: block; }
-            #terminal { padding: 1rem 0.9rem 5rem; }
-            .nav {
-                gap: 0.4rem;
-                overflow-x: auto;
-                flex-wrap: nowrap;
-                -webkit-overflow-scrolling: touch;
-                scrollbar-width: none;
-            }
-            .nav::-webkit-scrollbar { display: none; }
-            .nav-btn { font-size: 12px; padding: 8px 12px; white-space: nowrap; flex: 0 0 auto; }
-            .print-btn { padding: 8px 12px; }
-            .social-row { gap: 0.6rem; }
-            .social-link { padding: 8px 14px; }
-            .skill-name { width: 100px; font-size: 11px; }
-            #skills-chart { height: 300px !important; }
-            .status-bar {
-                font-size: 11px;
-                padding: 8px 0.9rem;
-                gap: 0.5rem;
-            }
-            #theme-cycle, #daynight-toggle { padding: 2px 4px; }
-            .hide-mobile { display: none; }
-            #clock { display: none; }
-            .section-header { font-size: 13px; letter-spacing: 1px; }
-            .entry { font-size: 13px; }
-            .section { margin-bottom: 2rem; }
-        }
+    a:focus-visible,
+    button:focus-visible {
+      outline: 2px solid var(--blue);
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
 
-        @media (prefers-reduced-motion: reduce) {
-            #crt { animation: none !important; }
-            .glitch:hover { animation: none; }
-            * { transition: none !important; }
-        }
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
 
-        /* Print button */
-        .print-btn {
-            background: none;
-            border: 1px solid var(--dark);
-            color: var(--dim);
-            font-family: 'Fira Code', monospace;
-            font-size: 12px;
-            padding: 4px 12px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .print-btn:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-            background: color-mix(in srgb, var(--primary) 10%, transparent);
-            text-shadow: 0 0 5px var(--primary);
-        }
+    .page {
+      width: min(46rem, calc(100% - 1.5rem));
+      margin: 0 auto;
+      padding: 2.25rem 0 3rem;
+    }
 
-        /* Skill tooltip */
-        #skill-tooltip {
-            position: absolute;
-            background: var(--bg);
-            border: 1px solid var(--primary);
-            color: var(--primary);
-            font-family: 'Fira Code', monospace;
-            font-size: 11px;
-            padding: 6px 10px;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.15s;
-            z-index: 100;
-            white-space: nowrap;
-            box-shadow: 0 0 12px color-mix(in srgb, var(--primary) 20%, transparent);
-            line-height: 1.5;
-        }
-        #skill-tooltip.visible { opacity: 1; }
+    .term {
+      background: var(--window);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+    }
 
-        .project-card {
-            border: 1px solid var(--dark);
-            padding: 0.75rem;
-            background: color-mix(in srgb, var(--primary) 3%, transparent);
-            transition: all 0.3s;
-        }
-        .project-card:hover {
-            border-color: var(--primary);
-            background: color-mix(in srgb, var(--primary) 6%, transparent);
-            box-shadow: 0 0 15px color-mix(in srgb, var(--primary) 10%, transparent), inset 0 0 15px color-mix(in srgb, var(--primary) 3%, transparent);
-        }
+    .chrome {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.65rem 0.85rem;
+      background: var(--chrome);
+      border-bottom: 1px solid var(--line);
+      border-radius: 14px 14px 0 0;
+    }
 
-        /* Nav bar */
-        .nav {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-            margin-bottom: 2rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 1px solid var(--dark);
-        }
-        .nav-btn {
-            background: none;
-            border: 1px solid var(--dark);
-            color: var(--dim);
-            font-family: 'Fira Code', monospace;
-            font-size: 12px;
-            padding: 4px 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .nav-btn:hover, .nav-btn.active {
-            border-color: var(--primary);
-            color: var(--primary);
-            background: color-mix(in srgb, var(--primary) 10%, transparent);
-            text-shadow: 0 0 5px var(--primary);
-        }
+    .dots {
+      display: flex;
+      gap: 6px;
+    }
 
-        /* Social row */
-        .social-row {
-            display: flex;
-            gap: 1rem;
-            margin-top: 0.75rem;
-            flex-wrap: wrap;
-        }
-        .social-link {
-            border: 1px solid var(--dark);
-            padding: 4px 14px;
-            font-size: 12px;
-            transition: all 0.3s;
-            display: inline-block;
-        }
-        .social-link:hover {
-            border-color: var(--accent2);
-            background: color-mix(in srgb, var(--accent2) 8%, transparent);
-            box-shadow: 0 0 10px color-mix(in srgb, var(--accent2) 20%, transparent);
-        }
+    .dots i {
+      display: block;
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+    }
 
-        /* Matrix rain canvas */
-        #matrix-bg {
-            position: fixed;
-            inset: 0;
-            z-index: -1;
-            opacity: var(--rain-opacity);
-            transition: opacity 0.4s;
-        }
+    .dots i:nth-child(1) { background: #ff5f57; }
+    .dots i:nth-child(2) { background: #febc2e; }
+    .dots i:nth-child(3) { background: #28c840; }
 
-        /* Graph background canvas */
-        #graph-bg {
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            opacity: 0.15;
-            pointer-events: none;
-            transition: opacity 0.4s;
-            width: 100%;
-            height: 100%;
-        }
+    .chrome-title {
+      margin: 0;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.82rem;
+      letter-spacing: 0.01em;
+    }
 
-        /* Skill bar */
-        .skill-bar {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 0.4rem;
-            font-size: 12px;
-        }
-        .skill-name { width: 140px; color: var(--dim); }
-        .skill-track {
-            flex: 1;
-            height: 8px;
-            background: var(--dark);
-            position: relative;
-            overflow: hidden;
-        }
-        .skill-fill {
-            height: 100%;
-            background: var(--primary);
-            box-shadow: 0 0 6px var(--primary);
-            width: 0;
-            transition: width 1.5s ease;
-        }
+    .theme-btn {
+      font: inherit;
+      font-size: 0.82rem;
+      color: var(--text);
+      background: transparent;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      min-height: 2.25rem;
+      padding: 0.25rem 0.65rem;
+      cursor: pointer;
+    }
 
-        /* Typing effect for about */
-        .typed-text { border-right: 2px solid var(--primary); padding-right: 2px; }
-        .typed-text.done { border-right: none; }
+    .no-js .theme-btn { display: none; }
 
-        /* Status bar */
-        .status-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: color-mix(in srgb, var(--dark) 90%, var(--bg));
-            border-top: 1px solid var(--dark);
-            padding: 4px 1.5rem;
-            font-size: 11px;
-            display: flex;
-            justify-content: space-between;
-            z-index: 500;
-            color: var(--dim);
-        }
+    .theme-btn .when-light { display: none; }
 
-        @media print {
-            body::before, body::after, #matrix-bg, #graph-bg, #boot, .status-bar, .print-btn, .nav, .ascii-header { display: none !important; }
-            #crt { animation: none !important; }
-            #terminal { opacity: 1 !important; padding: 0 !important; margin: 0 !important; max-width: 100% !important; }
-            .section { opacity: 1 !important; transform: none !important; margin-bottom: 0.6rem !important; }
-            .section.no-print { display: none !important; }
-            body { background: #fff; color: #000; font-size: 11px; }
-            .section-header { color: #000; text-shadow: none; font-size: 12px; margin-bottom: 0.3rem; padding-bottom: 0.1rem; }
-            .entry { margin-bottom: 0.4rem !important; font-size: 11px; line-height: 1.3; }
-            .entry-title { color: #000; }
-            .entry-meta { color: #666; font-size: 10px; }
-            .entry-desc { color: #333; font-size: 10px; }
-            .tag { font-size: 9px; padding: 0 4px; margin: 1px 2px 1px 0; }
-            .skill-name { color: #333; }
-            .shell-line { display: none !important; }
-            br { display: none !important; }
-            .social-row { margin-top: 0.3rem; }
-            .social-link { font-size: 10px; padding: 2px 8px; }
-            a { color: #0066cc; }
-        }
-    </style>
+    @media (prefers-color-scheme: light) {
+      :root:not([data-theme="dark"]) .theme-btn .when-dark { display: none; }
+      :root:not([data-theme="dark"]) .theme-btn .when-light { display: inline; }
+    }
+
+    :root[data-theme="light"] .theme-btn .when-dark { display: none; }
+    :root[data-theme="light"] .theme-btn .when-light { display: inline; }
+    :root[data-theme="dark"] .theme-btn .when-dark { display: inline; }
+    :root[data-theme="dark"] .theme-btn .when-light { display: none; }
+
+    .theme-btn:hover {
+      border-color: var(--blue);
+      color: var(--blue);
+    }
+
+    main {
+      padding: 1.35rem 1.35rem 0.4rem;
+    }
+
+    .block { margin: 0 0 1.85rem; }
+
+    .prompt {
+      margin: 0 0 0.85rem;
+      font-size: 1rem;
+      font-weight: 400;
+      line-height: 1.5;
+    }
+
+    .user { color: var(--blue); font-weight: 600; }
+    .host { color: var(--green); font-weight: 600; }
+    .path { color: var(--amber); }
+    .punct, .dollar { color: var(--faint); }
+    .cmd { color: var(--text); font-weight: 600; }
+
+    .typed {
+      display: inline-block;
+      overflow: hidden;
+      white-space: nowrap;
+      vertical-align: bottom;
+      width: calc(var(--chars) * 1ch);
+      animation: typing calc(var(--chars) * 70ms) steps(var(--chars), end) both;
+    }
+
+    @keyframes typing {
+      from { width: 0; }
+    }
+
+    .caret {
+      display: inline-block;
+      width: 0.62ch;
+      height: 1.05em;
+      margin-left: 0.35ch;
+      background: var(--amber);
+      vertical-align: text-bottom;
+      border-radius: 1px;
+      animation: blink 1.15s steps(1, end) infinite;
+    }
+
+    @keyframes blink {
+      0%, 62% { opacity: 1; }
+      68%, 100% { opacity: 0; }
+    }
+
+    h2[id] { scroll-margin-top: 1.25rem; }
+
+    h1 {
+      margin: 0 0 0.3rem;
+      font-size: clamp(1.55rem, 3.4vw, 2.05rem);
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      line-height: 1.25;
+    }
+
+    .role {
+      margin: 0;
+      color: var(--text);
+    }
+
+    .loc {
+      margin: 0.15rem 0 0.85rem;
+      color: var(--muted);
+    }
+
+    .bio {
+      margin: 0;
+      max-width: 62ch;
+    }
+
+    .links,
+    .jumps {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.15rem 0.95rem;
+      list-style: none;
+      margin: 0.95rem 0 0;
+      padding: 0;
+    }
+
+    .links a,
+    .jumps a {
+      display: inline-block;
+      padding: 0.4rem 0;
+    }
+
+    .out {
+      margin: 0;
+      padding: 0.1rem 0 0.1rem 0.95rem;
+      border-left: 2px solid var(--line);
+    }
+
+    .todo {
+      margin: 0 0 0.95rem;
+      color: var(--amber);
+    }
+
+    .interests {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .interests li {
+      display: grid;
+      grid-template-columns: 7.2rem 1fr;
+      gap: 0.35rem 0.85rem;
+      margin: 0 0 0.7rem;
+    }
+
+    .interests li:last-child { margin-bottom: 0; }
+
+    .key { color: var(--violet); }
+
+    .projects,
+    .papers,
+    .jobs,
+    .degrees {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .projects > li,
+    .papers > li,
+    .jobs > li,
+    .degrees > li {
+      padding: 0.7rem 0.7rem;
+      margin: 0 -0.7rem 0.25rem;
+      border-radius: 8px;
+    }
+
+    .projects > li:hover,
+    .projects > li:focus-within,
+    .papers > li:hover,
+    .papers > li:focus-within,
+    .jobs > li:hover,
+    .jobs > li:focus-within,
+    .degrees > li:hover,
+    .degrees > li:focus-within {
+      background: var(--hover);
+    }
+
+    .proj-head,
+    .job-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 0.8rem;
+    }
+
+    .name,
+    .job-title {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .projects a.name { color: var(--blue); }
+
+    .year,
+    .when {
+      color: var(--coral);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .desc,
+    .authors {
+      margin: 0.25rem 0 0;
+      color: var(--muted);
+    }
+
+    .meta {
+      margin: 0.2rem 0 0;
+      color: var(--faint);
+    }
+
+    .meta .journal { color: var(--muted); }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      list-style: none;
+      margin: 0.5rem 0 0;
+      padding: 0;
+    }
+
+    .tags li {
+      margin: 0;
+      padding: 0.05rem 0.45rem;
+      color: var(--green);
+      background: var(--chip);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      font-size: 0.85rem;
+      line-height: 1.45;
+    }
+
+    .more {
+      margin: 0.45rem 0 0;
+    }
+
+    .org {
+      margin: 0.15rem 0 0;
+      color: var(--muted);
+    }
+
+    .session-end {
+      padding: 0.2rem 1.35rem 1.2rem;
+    }
+
+    .copy {
+      margin: 0 0 0.85rem;
+      color: var(--faint);
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 640px) {
+      .page {
+        width: min(46rem, calc(100% - 1rem));
+        padding-top: 0.75rem;
+      }
+
+      main,
+      .session-end {
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+
+      .chrome-title { display: none; }
+
+      .chrome { grid-template-columns: auto 1fr; }
+
+      .theme-btn { justify-self: end; }
+
+      .interests li { grid-template-columns: 1fr; gap: 0.1rem; }
+
+      .proj-head { flex-wrap: wrap; }
+
+      h1 { font-size: 1.5rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .typed {
+        animation: none;
+        width: auto;
+      }
+
+      .caret { animation: none; }
+
+      html { scroll-behavior: auto; }
+    }
+
+    @media (forced-colors: active) {
+      .term { border: 1px solid CanvasText; }
+      .caret { background: CanvasText; }
+      .dots { display: none; }
+      .tags li { border: 1px solid CanvasText; }
+    }
+
+    @media print {
+      body { background: #fff; color: #000; }
+      .page { width: 100%; padding: 0; }
+      .term { border: 0; box-shadow: none; background: #fff; }
+      .chrome, .theme-btn, .caret, .jumps { display: none; }
+      a { color: #000; }
+      .out { border-left-color: #ccc; }
+    }
+  </style>
 </head>
 <body>
-    <canvas id="matrix-bg"></canvas>
-    <canvas id="graph-bg"></canvas>
-    <div id="theme-toast"></div>
+  <a class="skip" href="#content">Skip to content</a>
 
-    <div id="boot">
-        <div id="boot-text"></div>
+  <div class="page">
+    <div class="term">
+      <div class="chrome">
+        <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+        <p class="chrome-title">dcm@bio — zsh</p>
+        <button type="button" class="theme-btn" id="theme-toggle" aria-pressed="false">
+          <span class="when-dark">Use light theme</span><span class="when-light">Use dark theme</span>
+        </button>
+      </div>
+
+      <main id="content">
+        <header class="block">
+          <p class="prompt">
+            <span class="user">dcm</span><span class="punct">@</span><span class="host">bio</span><span class="punct">:</span><span class="path">~</span><span class="dollar">$ </span><span class="typed" style="--chars: 6">whoami</span><span class="caret" aria-hidden="true"></span>
+          </p>
+          <div class="out">
+            <h1>Daniel C Morgan</h1>
+            <p class="role">Lead Computational Biologist, <a href="https://rootbio.ai" target="_blank">RootBio</a></p>
+            <p class="loc">Graph-Based Research Scientist &amp; Engineer · Stockholm, Sweden</p>
+            <p class="bio">Bioinformaticist turned Engineer. 10+ years working with universities and companies worldwide. Building products that solve real-world problems using graph-based structures and advanced technologies.</p>
+            <ul class="links">
+              <li><a href="https://github.com/dcolinmorgan" rel="me noopener noreferrer" target="_blank">GitHub<span class="sr-only"> (opens in a new tab)</span></a></li>
+              <li><a href="https://scholar.google.com/citations?user=iznLQmYAAAAJ&amp;hl=en" rel="me noopener noreferrer" target="_blank">Google Scholar<span class="sr-only"> (opens in a new tab)</span></a></li>
+              <li><a href="https://orcid.org/0000-0001-8326-6178" rel="me noopener noreferrer" target="_blank">ORCID<span class="sr-only"> (opens in a new tab)</span></a></li>
+              <li><a href="https://www.linkedin.com/in/dcolinmorgan" rel="me noopener noreferrer" target="_blank">LinkedIn<span class="sr-only"> (opens in a new tab)</span></a></li>
+              <li><a href="https://x.com/dcolinmorgan" rel="me noopener noreferrer" target="_blank">Twitter<span class="sr-only"> (opens in a new tab)</span></a></li>
+              <li><a href="https://rootbio.ai" rel="noopener noreferrer" target="_blank">RootBio<span class="sr-only"> (opens in a new tab)</span></a></li>
+              <li><a href="https://graffold.com" rel="noopener noreferrer" target="_blank">Graffold<span class="sr-only"> (opens in a new tab)</span></a></li>
+            </ul>
+            <nav class="jumps" aria-label="On this page">
+              <a href="#research">research</a>
+              <a href="#projects">projects</a>
+              <a href="#papers">papers</a>
+              <a href="#work">work</a>
+              <a href="#education">education</a>
+            </nav>
+          </div>
+        </header>
+
+        <section class="block" aria-labelledby="research">
+          <h2 class="prompt" id="research">
+            <span class="sr-only">Research. </span>
+            <span class="user">dcm</span><span class="punct">@</span><span class="host">bio</span><span class="punct">:</span><span class="path">~</span><span class="dollar">$ </span><span class="cmd">cat research.md</span>
+          </h2>
+          <div class="out">
+            <p class="todo" role="note"># TODO: a first-person research statement is not in the repo. Topics below are taken from the roles and papers already on this page.</p>
+            <ul class="interests">
+              <li>
+                <span class="key">networks</span>
+                <span>Gene regulatory network inference, benchmarking, and FDR control — <a href="https://sonnhammer-tutorials.bitbucket.io/genespider.html" target="_blank">GeneSPIDER</a>, <a href="https://github.com/dcolinmorgan/pyGS" target="_blank">pyGS</a>, and <a href="https://netzoo.github.io/" target="_blank">NetZoo</a>.</span>
+              </li>
+              <li>
+                <span class="key">graphs</span>
+                <span>Graph-based structures for biological problems, and graph tooling at <a href="https://graffold.com" target="_blank">Graffold</a>.</span>
+              </li>
+              <li>
+                <span class="key">gpu</span>
+                <span>GPU-accelerated feature encoding and network analysis — <a href="https://github.com/graphistry/cu-cat/" target="_blank">cu-cat</a> and <a href="https://doi.org/10.1093/nargab/lqac002" target="_blank">gpuZoo</a>.</span>
+              </li>
+              <li>
+                <span class="key">molecules</span>
+                <span>AI inference for discovering novel small molecules, at <a href="https://rootbio.ai" target="_blank">RootBio</a>.</span>
+              </li>
+              <li>
+                <span class="key">genomes</span>
+                <span>Metagenomics, epigenetics, and methylation data for transcription-factor binding prediction.</span>
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="block" aria-labelledby="projects">
+          <h2 class="prompt" id="projects">
+            <span class="sr-only">Projects. </span>
+            <span class="user">dcm</span><span class="punct">@</span><span class="host">bio</span><span class="punct">:</span><span class="path">~</span><span class="dollar">$ </span><span class="cmd">ls projects</span>
+          </h2>
+          <div class="out">
+            <ul class="projects">
+              <li>
+                <div class="proj-head">
+                  <a class="name" href="https://github.com/dcolinmorgan/herdr-remote">herdr-remote<span class="sr-only"> (opens in a new tab)</span></a>
+                  <span class="year">2025</span>
+                </div>
+                <p class="desc">Agent dashboard for herdr.dev — monitor &amp; control local AI coding agents from menu bar, phone, or Telegram.</p>
+                <ul class="tags" aria-label="Topics for herdr-remote">
+                  <li>Python</li><li>Swift</li><li>WebSocket</li><li>PWA</li>
+                </ul>
+              </li>
+              <li>
+                <div class="proj-head">
+                  <a class="name" href="https://github.com/dcolinmorgan/pyGS">pyGS<span class="sr-only"> (opens in a new tab)</span></a>
+                  <span class="year">2024</span>
+                </div>
+                <p class="desc">Python NestBoot-FDR for gene regulatory network inference benchmarking.</p>
+                <ul class="tags" aria-label="Topics for pyGS">
+                  <li>Python</li><li>bootstrap</li><li>GRN</li>
+                </ul>
+              </li>
+              <li>
+                <div class="proj-head">
+                  <a class="name" href="https://github.com/graphistry/cu-cat/">cu-cat<span class="sr-only"> (opens in a new tab)</span></a>
+                  <span class="year">2023</span>
+                </div>
+                <p class="desc">End-to-end GPU feature encoder.</p>
+                <ul class="tags" aria-label="Topics for cu-cat">
+                  <li>RAPIDS</li><li>CUML</li><li>GPU</li>
+                </ul>
+              </li>
+              <li>
+                <div class="proj-head">
+                  <a class="name" href="https://graphistry.com/">Graphistry<span class="sr-only"> (opens in a new tab)</span></a>
+                  <span class="year">2022</span>
+                </div>
+                <p class="desc">Graph visualization on GPUs.</p>
+                <ul class="tags" aria-label="Topics for Graphistry">
+                  <li>network-sci</li><li>RAPIDS</li>
+                </ul>
+              </li>
+              <li>
+                <div class="proj-head">
+                  <a class="name" href="https://github.com/dcolinmorgan/viral_snake">Viral_Snake<span class="sr-only"> (opens in a new tab)</span></a>
+                  <span class="year">2021</span>
+                </div>
+                <p class="desc">Viral metagenomics workflow.</p>
+                <ul class="tags" aria-label="Topics for Viral_Snake">
+                  <li>snakemake</li><li>singularity</li>
+                </ul>
+              </li>
+              <li>
+                <div class="proj-head">
+                  <a class="name" href="https://netzoo.github.io/">NetZoo<span class="sr-only"> (opens in a new tab)</span></a>
+                  <span class="year">2020</span>
+                </div>
+                <p class="desc">Message passing algorithms for bio networks.</p>
+                <ul class="tags" aria-label="Topics for NetZoo">
+                  <li>Python</li><li>R</li>
+                </ul>
+              </li>
+              <li>
+                <div class="proj-head">
+                  <a class="name" href="https://github.com/dcolinmorgan/cancer-grn">cancer-grn<span class="sr-only"> (opens in a new tab)</span></a>
+                  <span class="year">2020</span>
+                </div>
+                <p class="desc">Shiny app for network viz &amp; overlap analysis of oncogenic GRNs.</p>
+                <ul class="tags" aria-label="Topics for cancer-grn">
+                  <li>R</li><li>Shiny</li><li>igraph</li>
+                </ul>
+                <p class="more"><a href="https://dcolin.shinyapps.io/cancergrn/" target="_blank">live demo<span class="sr-only"> (opens in a new tab)</span></a></p>
+              </li>
+              <li>
+                <div class="proj-head">
+                  <a class="name" href="https://github.com/dcolinmorgan/mili_benchmark">mili_benchmark<span class="sr-only"> (opens in a new tab)</span></a>
+                  <span class="year">2019</span>
+                </div>
+                <p class="desc">Benchmark methylation as proxy to infer TF binding.</p>
+                <ul class="tags" aria-label="Topics for mili_benchmark">
+                  <li>Python</li><li>Bash</li><li>R</li><li>methylation</li>
+                </ul>
+              </li>
+              <li>
+                <div class="proj-head">
+                  <a class="name" href="https://sonnhammer-tutorials.bitbucket.io/genespider.html">GeneSPIDER<span class="sr-only"> (opens in a new tab)</span></a>
+                  <span class="year">2017</span>
+                </div>
+                <p class="desc">Synthetic bio data &amp; network inference.</p>
+                <ul class="tags" aria-label="Topics for GeneSPIDER">
+                  <li>MATLAB</li><li>R</li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="block" aria-labelledby="papers">
+          <h2 class="prompt" id="papers">
+            <span class="sr-only">Papers. </span>
+            <span class="user">dcm</span><span class="punct">@</span><span class="host">bio</span><span class="punct">:</span><span class="path">~</span><span class="dollar">$ </span><span class="cmd">cat papers.md</span>
+          </h2>
+          <div class="out">
+            <ol class="papers">
+              <li>
+                <a href="https://doi.org/10.1093/nargab/lqae121" target="_blank">GeneSPIDER2: large scale GRN simulation and benchmarking with perturbed single-cell data<span class="sr-only"> (opens in a new tab)</span></a>
+                <p class="authors">M Garbulowski, T Hillerton, D Morgan, D Seçilmiş, ...</p>
+                <p class="meta"><span class="journal">NAR Genomics and Bioinformatics</span> · 2024 · Cited by 11</p>
+              </li>
+              <li>
+                <a href="https://doi.org/10.1080/15592294.2024.2309826" target="_blank">Using methylation data to improve transcription factor binding prediction<span class="sr-only"> (opens in a new tab)</span></a>
+                <p class="authors">D Morgan, DL DeMeo, K Glass</p>
+                <p class="meta"><span class="journal">Epigenetics</span> · 2024 · Cited by 8</p>
+              </li>
+              <li>
+                <a href="https://doi.org/10.1093/bioadv/vbae030" target="_blank">MetaQuad: shared informative variants discovery in metagenomic samples<span class="sr-only"> (opens in a new tab)</span></a>
+                <p class="authors">S Xu, DC Morgan, G Qian, Y Huang, JWK Ho</p>
+                <p class="meta"><span class="journal">Bioinformatics Advances</span> · 2024 · Cited by 1</p>
+              </li>
+              <li>
+                <a href="https://doi.org/10.1186/s13059-023-02853-7" target="_blank">The Network Zoo: a multilingual package for the inference and analysis of gene regulatory networks<span class="sr-only"> (opens in a new tab)</span></a>
+                <p class="authors">M Ben Guebila, T Wang, CM Lopes-Ramos, V Fanfani, D Weighill, ...</p>
+                <p class="meta"><span class="journal">Genome Biology</span> · 2023 · Cited by 45</p>
+              </li>
+              <li>
+                <a href="https://doi.org/10.1038/s41467-023-37975-y" target="_blank">Altered human gut virome in patients undergoing antibiotics therapy for Helicobacter pylori<span class="sr-only"> (opens in a new tab)</span></a>
+                <p class="authors">L Wang, H Yao, DC Morgan, KS Lau, SY Leung, JWK Ho, WK Leung</p>
+                <p class="meta"><span class="journal">Nature Communications</span> · 2023 · Cited by 41</p>
+              </li>
+              <li>
+                <a href="https://doi.org/10.1093/nargab/lqac002" target="_blank">gpuZoo: Cost-effective estimation of gene regulatory networks using the Graphics Processing Unit<span class="sr-only"> (opens in a new tab)</span></a>
+                <p class="authors">MB Guebila, DC Morgan, K Glass, ML Kuijjer, DL DeMeo, J Quackenbush</p>
+                <p class="meta"><span class="journal">NAR Genomics and Bioinformatics</span> · 2022 · Cited by 7</p>
+              </li>
+              <li>
+                <a href="https://doi.org/10.1038/s41540-020-00158-0" target="_blank">Uncovering cancer gene regulation by accurate regulatory network inference from uninformative data<span class="sr-only"> (opens in a new tab)</span></a>
+                <p class="authors">D Seçilmiş, T Hillerton, D Morgan, A Tjärnberg, S Nelander, ...</p>
+                <p class="meta"><span class="journal">NPJ Systems Biology and Applications</span> · 2020 · Cited by 27</p>
+              </li>
+              <li>
+                <a href="https://doi.org/10.1038/s41598-020-70941-y" target="_blank">Perturbation-based gene regulatory network inference to unravel oncogenic mechanisms<span class="sr-only"> (opens in a new tab)</span></a>
+                <p class="authors">D Morgan, M Studham, A Tjärnberg, H Weishaupt, FJ Swartling, ...</p>
+                <p class="meta"><span class="journal">Scientific Reports</span> · 2020 · Cited by 21</p>
+              </li>
+              <li>
+                <a href="https://doi.org/10.1093/bioinformatics/bty764" target="_blank">A generalized framework for controlling FDR in gene regulatory network inference<span class="sr-only"> (opens in a new tab)</span></a>
+                <p class="authors">D Morgan, A Tjärnberg, TEM Nordling, ELL Sonnhammer</p>
+                <p class="meta"><span class="journal">Bioinformatics</span> · 2019 · Cited by 20</p>
+              </li>
+              <li>
+                <a href="https://doi.org/10.1039/C7MB00058H" target="_blank">GeneSPIDER — Gene regulatory network inference benchmarking with controlled network and data properties<span class="sr-only"> (opens in a new tab)</span></a>
+                <p class="authors">A Tjärnberg, D Morgan, M Studham, TEM Nordling, E Sonnhammer</p>
+                <p class="meta"><span class="journal">Molecular Biosystems</span> · 2017 · Cited by 25</p>
+              </li>
+            </ol>
+          </div>
+        </section>
+
+        <section class="block" aria-labelledby="work">
+          <h2 class="prompt" id="work">
+            <span class="sr-only">Work. </span>
+            <span class="user">dcm</span><span class="punct">@</span><span class="host">bio</span><span class="punct">:</span><span class="path">~</span><span class="dollar">$ </span><span class="cmd">ls work</span>
+          </h2>
+          <div class="out">
+            <ul class="jobs">
+              <li>
+                <div class="job-head">
+                  <span class="job-title">Lead Computational Biologist</span>
+                  <span class="when">2026 – Present</span>
+                </div>
+                <p class="org"><a href="https://rootbio.ai" target="_blank">RootBio</a> (ex Agteria)</p>
+                <p class="desc">AI inference platform for discovering novel small molecules.</p>
+                <ul class="tags" aria-label="Topics for RootBio">
+                  <li>AI</li><li>drug discovery</li><li>small molecules</li>
+                </ul>
+              </li>
+              <li>
+                <div class="job-head">
+                  <span class="job-title">Founder</span>
+                  <span class="when">2025 – Present</span>
+                </div>
+                <p class="org"><a href="https://graffold.com" target="_blank">Graffold</a></p>
+                <p class="desc">Building graph-based tooling end to end — product, engineering, everything.</p>
+                <ul class="tags" aria-label="Topics for Graffold">
+                  <li>Python</li><li>graphs</li><li>LLMs</li><li>founder</li>
+                </ul>
+              </li>
+              <li>
+                <div class="job-head">
+                  <span class="job-title">Data Scientist</span>
+                  <span class="when">2025 – 2026</span>
+                </div>
+                <p class="org">Olink Proteomics · Uppsala, SE</p>
+                <p class="desc">Investigate &amp; discover platform features &amp; content via AI/ML, utilizing LLMs.</p>
+                <ul class="tags" aria-label="Topics for Olink">
+                  <li>Torch</li><li>AWS</li><li>LLMs</li>
+                </ul>
+              </li>
+              <li>
+                <div class="job-head">
+                  <span class="job-title">Research Engineer</span>
+                  <span class="when">2022 – 2024</span>
+                </div>
+                <p class="org">Graphistry · Remote</p>
+                <p class="desc">AI agents with LLMs, GPU-accelerated network analysis toolkit, graph-based ML pipelines.</p>
+                <ul class="tags" aria-label="Topics for Graphistry">
+                  <li>RAPIDS</li><li>CUDF</li><li>CUML</li><li>Docker</li><li>K8s</li><li>AWS</li>
+                </ul>
+              </li>
+              <li>
+                <div class="job-head">
+                  <span class="job-title">Research Fellow</span>
+                  <span class="when">2021 – 2023</span>
+                </div>
+                <p class="org">Hong Kong University · HKSAR</p>
+                <p class="desc">Metagenomics Research Lead.</p>
+                <ul class="tags" aria-label="Topics for Hong Kong University">
+                  <li>metagenomics</li><li>bioinformatics</li>
+                </ul>
+              </li>
+              <li>
+                <div class="job-head">
+                  <span class="job-title">Postdoctoral Research Fellow</span>
+                  <span class="when">2019 – 2021</span>
+                </div>
+                <p class="org">Harvard Medical School · Boston, MA</p>
+                <p class="desc">Epigenetics analysis. Developed NetZoo, implemented GPU speed increases.</p>
+                <ul class="tags" aria-label="Topics for Harvard Medical School">
+                  <li>Python</li><li>R</li><li>Bash</li><li>GPU</li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="block" aria-labelledby="education">
+          <h2 class="prompt" id="education">
+            <span class="sr-only">Education. </span>
+            <span class="user">dcm</span><span class="punct">@</span><span class="host">bio</span><span class="punct">:</span><span class="path">~</span><span class="dollar">$ </span><span class="cmd">cat education.log</span>
+          </h2>
+          <div class="out">
+            <ul class="degrees">
+              <li>
+                <div class="job-head">
+                  <span class="job-title">PhD Bioinformatics</span>
+                  <span class="when">2015 – 2019</span>
+                </div>
+                <p class="org">Stockholm University</p>
+                <p class="desc">Thesis: Control Systems Engineering of Biological Networks</p>
+              </li>
+              <li>
+                <div class="job-head">
+                  <span class="job-title">MSc Bioinformatics</span>
+                  <span class="when">2012 – 2014</span>
+                </div>
+                <p class="org">Ohio State University</p>
+                <p class="desc">Thesis: Biological Networks Clique Merger Algorithm</p>
+              </li>
+            </ul>
+          </div>
+        </section>
+      </main>
+
+      <footer class="session-end">
+        <p class="copy">© 2026 Daniel C Morgan</p>
+      </footer>
     </div>
+  </div>
 
-    <div id="crt">
-        <div id="terminal">
-            <pre class="ascii-header">
- ____   ____ __  __
-|  _ \ / ___|  \/  |
-| | | | |   | |\/| |
-| |_| | |___| |  | |
-|____/ \____|_|  |_|
-            </pre>
-            <div class="mobile-logo">DCM<span class="cursor"></span></div>
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var btn = document.getElementById("theme-toggle");
+      var meta = document.querySelector('meta[name="theme-color"]');
 
-            <div class="nav">
-                <button class="nav-btn active" onclick="scrollToSection('about')">> about</button>
-                <button class="nav-btn" onclick="scrollToSection('experience')">> work</button>
-                <button class="nav-btn" onclick="scrollToSection('education')">> edu</button>
-                <button class="nav-btn" onclick="scrollToSection('publications')">> pubs</button>
-                <button class="nav-btn" onclick="scrollToSection('skills')">> skills</button>
-                <button class="nav-btn" onclick="scrollToSection('projects')">> projects</button>
-                <button class="print-btn" onclick="window.print()" style="margin-left:auto;">⎙ PDF</button>
-            </div>
+      function systemTheme() {
+        return window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+      }
 
-            <!-- ABOUT -->
-            <div class="section" id="about">
-                <div class="section-header">/* ABOUT */</div>
-                <div class="shell-line" style="font-size:13px;">
-                    <span class="prompt">dcm@world</span>:<span class="path">~</span>$ <span class="cmd">cat about.txt</span>
-                </div>
-                <br>
-                <div style="font-size:13px; line-height:1.7;">
-                    <span class="entry-title glitch">Daniel C Morgan</span><br>
-                    <span class="entry-desc">Graph-Based Research Scientist & Engineer</span><br>
-                    <span style="color:var(--dim);">📍 Stockholm, Sweden</span>
-                </div>
-                <br>
-                <div class="entry-desc" id="about-typed"></div>
-                <div class="social-row">
-                    <a href="https://www.linkedin.com/in/dcolinmorgan" target="_blank" class="social-link">[LinkedIn]</a>
-                    <a href="https://github.com/dcolinmorgan" target="_blank" class="social-link">[GitHub]</a>
-                    <a href="https://x.com/dcolinmorgan" target="_blank" class="social-link">[Twitter]</a>
-                </div>
-            </div>
+      function theme() {
+        var set = root.getAttribute("data-theme");
+        return set === "light" || set === "dark" ? set : systemTheme();
+      }
 
-            <!-- EXPERIENCE -->
-            <div class="section" id="experience">
-                <div class="section-header">/* WORK EXPERIENCE */</div>
-                <div class="shell-line" style="font-size:13px;">
-                    <span class="prompt">dcm@world</span>:<span class="path">~/career</span>$ <span class="cmd">ls -la</span>
-                </div>
-                <br>
-                <div class="entry">
-                    <span class="entry-title"><a href="https://rootbio.ai" target="_blank" style="border-bottom:none; color:var(--title);">Lead Computational Biologist</a></span><br>
-                    <span class="entry-meta">@ <a href="https://rootbio.ai" target="_blank">RootBio</a> (ex Agteria) · 2026 - Present</span><br>
-                    <span class="entry-desc">AI inference platform for discovering novel small molecules.</span><br>
-                    <span class="tag">AI</span><span class="tag">drug discovery</span><span class="tag">small molecules</span>
-                </div>
-                <div class="entry">
-                    <span class="entry-title"><a href="https://graffold.com" target="_blank" style="border-bottom:none; color:var(--title);">Founder</a></span><br>
-                    <span class="entry-meta">@ <a href="https://graffold.com" target="_blank">Graffold</a> · 2025 - Present</span><br>
-                    <span class="entry-desc">Building graph-based tooling end to end — product, engineering, everything.</span><br>
-                    <span class="tag">Python</span><span class="tag">graphs</span><span class="tag">LLMs</span><span class="tag">founder</span>
-                </div>
-                <div class="entry">
-                    <span class="entry-title">Data Scientist</span><br>
-                    <span class="entry-meta">@ Olink Proteomics · Uppsala, SE · 2025 - 2026</span><br>
-                    <span class="entry-desc">Investigate & discover platform features & content via AI/ML, utilizing LLMs.</span><br>
-                    <span class="tag">Torch</span><span class="tag">AWS</span><span class="tag">LLMs</span>
-                </div>
-                <div class="entry">
-                    <span class="entry-title">Research Engineer</span><br>
-                    <span class="entry-meta">@ Graphistry · Remote · 2022 - 2024</span><br>
-                    <span class="entry-desc">AI agents with LLMs, GPU-accelerated network analysis toolkit, graph-based ML pipelines.</span><br>
-                    <span class="tag">RAPIDS</span><span class="tag">CUDF</span><span class="tag">CUML</span><span class="tag">Docker</span><span class="tag">K8s</span><span class="tag">AWS</span>
-                </div>
-                <div class="entry">
-                    <span class="entry-title">Research Fellow</span><br>
-                    <span class="entry-meta">@ Hong Kong University · HKSAR · 2021 - 2023</span><br>
-                    <span class="entry-desc">Metagenomics Research Lead.</span><br>
-                    <span class="tag">metagenomics</span><span class="tag">bioinformatics</span>
-                </div>
-                <div class="entry">
-                    <span class="entry-title">Postdoctoral Research Fellow</span><br>
-                    <span class="entry-meta">@ Harvard Medical School · Boston, MA · 2019 - 2021</span><br>
-                    <span class="entry-desc">Epigenetics analysis. Developed NetZoo, implemented GPU speed increases.</span><br>
-                    <span class="tag">Python</span><span class="tag">R</span><span class="tag">Bash</span><span class="tag">GPU</span>
-                </div>
-            </div>
+      function paint() {
+        var current = theme();
+        btn.setAttribute("aria-pressed", current === "light" ? "true" : "false");
+        if (meta) meta.setAttribute("content", current === "light" ? "#e7e1d6" : "#0b0f14");
+      }
 
-            <!-- EDUCATION -->
-            <div class="section" id="education">
-                <div class="section-header">/* EDUCATION */</div>
-                <div class="shell-line" style="font-size:13px;">
-                    <span class="prompt">dcm@world</span>:<span class="path">~/edu</span>$ <span class="cmd">cat degrees.log</span>
-                </div>
-                <br>
-                <div class="entry">
-                    <span class="entry-title">PhD Bioinformatics</span><br>
-                    <span class="entry-meta">@ Stockholm University · 2015 - 2019</span><br>
-                    <span class="entry-desc">Thesis: Control Systems Engineering of Biological Networks</span>
-                </div>
-                <div class="entry">
-                    <span class="entry-title">MSc Bioinformatics</span><br>
-                    <span class="entry-meta">@ Ohio State University · 2012 - 2014</span><br>
-                    <span class="entry-desc">Thesis: Biological Networks Clique Merger Algorithm</span>
-                </div>
-            </div>
+      btn.addEventListener("click", function () {
+        var next = theme() === "light" ? "dark" : "light";
+        root.setAttribute("data-theme", next);
+        try { localStorage.setItem("dcm-appearance", next); } catch (e) {}
+        paint();
+      });
 
-            <!-- PUBLICATIONS -->
-            <div class="section no-print" id="publications">
-                <div class="section-header">/* PUBLICATIONS */</div>
-                <div class="shell-line" style="font-size:13px;">
-                    <span class="prompt">dcm@world</span>:<span class="path">~/pubs</span>$ <span class="cmd">grep -c "cited" scholar.bib</span> <span class="entry-desc" id="cite-summary"></span>
-                </div>
-                <br>
-                <div style="margin-bottom:0.75rem;">
-                    <button class="nav-btn active" onclick="sortPubs('citations',this)">sort: citations ▼</button>
-                    <button class="nav-btn" onclick="sortPubs('year',this)">sort: year</button>
-                </div>
-                <div id="pubs-list"></div>
-                <div style="margin-top:1rem;">
-                    <a href="https://scholar.google.com/citations?user=iznLQmYAAAAJ&hl=en" target="_blank" class="social-link">[Google Scholar →]</a>
-                    <a href="https://orcid.org/0000-0001-8326-6178" target="_blank" class="social-link">[ORCID →]</a>
-                </div>
-            </div>
-
-            <!-- SKILLS -->
-            <div class="section no-print" id="skills">
-                <div class="section-header">/* SKILLS */</div>
-                <div class="shell-line" style="font-size:13px;">
-                    <span class="prompt">dcm@world</span>:<span class="path">~/skills</span>$ <span class="cmd">git log --stat | sort -k2 -rn</span>
-                </div>
-                <br>
-                <div style="font-size:11px; color:var(--dim); margin-bottom:0.5rem;">x: years experience · y: proficiency · bubble: relative commit activity</div>
-                <canvas id="skills-chart" style="width:100%; height:340px; border:1px solid var(--dark); background:color-mix(in srgb, var(--primary) 2%, transparent); cursor:crosshair;"></canvas>
-                <div id="skill-tooltip"></div>
-            </div>
-
-            <!-- PROJECTS -->
-            <div class="section no-print" id="projects">
-                <div class="section-header">/* SIDE PROJECTS */</div>
-                <div class="shell-line" style="font-size:13px;">
-                    <span class="prompt">dcm@world</span>:<span class="path">~/projects</span>$ <span class="cmd">find . -type d -maxdepth 1</span>
-                </div>
-                <br>
-                <div style="margin-bottom:0.75rem;">
-                    <button class="nav-btn active" onclick="sortProjects('newest',this)">sort: newest ▼</button>
-                    <button class="nav-btn" onclick="sortProjects('oldest',this)">sort: oldest</button>
-                </div>
-                <div class="project-grid" id="projects-list"></div>
-            </div>
-
-            <div class="section no-print" id="footer" style="text-align:center; margin-top:3rem; margin-bottom:3rem;">
-                <span class="entry-desc">© 2026 Daniel C Morgan · press [t] to change theme · type <span style="color:var(--accent2);">help</span> below</span>
-            </div>
-
-            <!-- INTERACTIVE PROMPT -->
-            <div class="section no-print" id="shell" style="margin-bottom:4rem;">
-                <div id="shell-output" style="font-size:13px; line-height:1.6;"></div>
-                <div class="shell-input-line" style="font-size:13px; display:flex; align-items:center; gap:0.4rem;">
-                    <span class="prompt">dcm@world</span>:<span class="path">~</span>$
-                    <input id="shell-input" type="text" autocomplete="off" spellcheck="false"
-                        aria-label="terminal command input"
-                        style="flex:1; background:none; border:none; outline:none; color:var(--primary); font-family:'Fira Code',monospace; font-size:13px; caret-color:var(--primary);">
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="status-bar">
-        <span>dcm@world:~ <span id="vim-mode">[NORMAL]</span></span>
-        <span id="theme-label"><span id="theme-cycle" style="cursor:pointer;" onclick="applyTheme((currentTheme+1)%THEMES.length)">phosphor</span> <span id="daynight-toggle" style="cursor:pointer;" onclick="toggleDayNight()">☾ night</span> · <span class="hide-mobile">[i]nsert [1-6] [t]heme [d]ay/night</span></span>
-        <span id="clock"></span>
-    </div>
-
-    <script>
-    // ── Theme Engine ──
-    const THEMES = [
-        { name: 'phosphor',  primary:'#00ff41', dim:'#00aa2a', dark:'#003b00', bg:'#0a0a0a', accent1:'#ffb000', accent2:'#00ffff', accent3:'#ff0040' },
-        { name: 'amber',     primary:'#ffb000', dim:'#b87a00', dark:'#3d2800', bg:'#0a0800', accent1:'#ff6600', accent2:'#ffe066', accent3:'#ff4444' },
-        { name: 'cyberpunk', primary:'#ff00ff', dim:'#aa00aa', dark:'#3b003b', bg:'#0a000a', accent1:'#00ffff', accent2:'#ff0080', accent3:'#ffff00' },
-        { name: 'ice',       primary:'#00ccff', dim:'#0088aa', dark:'#002d3b', bg:'#040a0e', accent1:'#88ddff', accent2:'#ffffff', accent3:'#0066ff' },
-        { name: 'blood',     primary:'#ff0040', dim:'#aa002a', dark:'#3b000e', bg:'#0a0002', accent1:'#ff6666', accent2:'#ff8800', accent3:'#ffcc00' },
-        { name: 'solarized', primary:'#859900', dim:'#6b7a00', dark:'#2a3000', bg:'#002b36', accent1:'#b58900', accent2:'#2aa198', accent3:'#dc322f' },
-    ];
-    // Day-mode light variants per theme (bg becomes light, colors darken for contrast)
-    const DAY_OVERRIDES = [
-        { bg:'#f0f4f0', primary:'#007a1e', dim:'#339944', dark:'#c0dcc0', accent1:'#b87a00', accent2:'#007088', accent3:'#cc0033', title:'#111' },
-        { bg:'#fdf6e8', primary:'#8a5a00', dim:'#b87a00', dark:'#e8d8b8', accent1:'#cc5500', accent2:'#6b4e00', accent3:'#cc3333', title:'#1a1000' },
-        { bg:'#f8f0f8', primary:'#990099', dim:'#bb44bb', dark:'#e0c0e0', accent1:'#007088', accent2:'#cc0066', accent3:'#888800', title:'#1a001a' },
-        { bg:'#eef6fa', primary:'#006688', dim:'#338899', dark:'#c0dde8', accent1:'#4488aa', accent2:'#333333', accent3:'#0044aa', title:'#0a1a22' },
-        { bg:'#faf0f0', primary:'#aa0030', dim:'#cc4455', dark:'#e8c0c0', accent1:'#cc4444', accent2:'#aa5500', accent3:'#886600', title:'#1a0008' },
-        { bg:'#fdf6e3', primary:'#586e00', dim:'#6b7a00', dark:'#d6d0a8', accent1:'#8a6800', accent2:'#1a8880', accent3:'#b02020', title:'#002b36' },
-    ];
-    let currentTheme = 0;
-    let dayMode = false;
-    let rainColor = THEMES[0].primary;
-
-    function applyTheme(idx) {
-        currentTheme = idx;
-        const t = THEMES[idx];
-        const r = document.documentElement.style;
-        if (dayMode) {
-            const d = DAY_OVERRIDES[idx];
-            Object.entries({primary:d.primary, dim:d.dim, dark:d.dark, bg:d.bg, accent1:d.accent1, accent2:d.accent2, accent3:d.accent3, title:d.title})
-                .forEach(([k,v]) => r.setProperty('--'+k, v));
-            r.setProperty('--scanline-opacity', '0');
-            r.setProperty('--rain-opacity', '0.02');
-            document.getElementById('crt').style.animation = 'none';
-            rainColor = d.primary;
-        } else {
-            Object.entries({primary:t.primary, dim:t.dim, dark:t.dark, bg:t.bg, accent1:t.accent1, accent2:t.accent2, accent3:t.accent3})
-                .forEach(([k,v]) => r.setProperty('--'+k, v));
-            r.setProperty('--title', '#ffffff');
-            r.setProperty('--scanline-opacity', '1');
-            r.setProperty('--rain-opacity', '0.06');
-            document.getElementById('crt').style.animation = 'flicker 4s infinite';
-            rainColor = t.primary;
-        }
-        updateLabel();
-        // Toast
-        const toast = document.getElementById('theme-toast');
-        toast.textContent = '> ' + (dayMode ? '☀ ' : '☾ ') + THEMES[idx].name;
-        toast.classList.add('show');
-        clearTimeout(toast._tid);
-        toast._tid = setTimeout(() => toast.classList.remove('show'), 1200);
-        localStorage.setItem('dcm-theme', idx);
-        localStorage.setItem('dcm-day', dayMode ? '1' : '0');
-    }
-
-    function toggleDayNight() {
-        dayMode = !dayMode;
-        applyTheme(currentTheme);
-    }
-
-    function updateLabel() {
-        const mode = dayMode ? '☀ day' : '☾ night';
-        document.getElementById('theme-cycle').textContent = THEMES[currentTheme].name;
-        document.getElementById('daynight-toggle').textContent = mode;
-    }
-
-    // Restore saved
-    const saved = localStorage.getItem('dcm-theme');
-    const savedDay = localStorage.getItem('dcm-day');
-    if (savedDay === '1') dayMode = true;
-    if (saved !== null) { applyTheme(+saved); } else if (dayMode) { applyTheme(0); }
-
-    // Keyboard handler
-    // ── Vim-style mode indicator ──
-    function setMode(m) {
-        const el = document.getElementById('vim-mode');
-        el.textContent = '[' + m + ']';
-        el.style.color = m === 'INSERT' ? 'var(--accent1)' : '';
-    }
-
-    document.addEventListener('keydown', e => {
-        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-        if (e.key === 'i' || e.key === '/') {
-            e.preventDefault();
-            setMode('INSERT');
-            const inp = document.getElementById('shell-input');
-            inp.scrollIntoView({behavior:'smooth', block:'center'});
-            inp.focus();
-        } else if (e.key === 't' || e.key === 'T') {
-            applyTheme((currentTheme + 1) % THEMES.length);
-        } else if (e.key === 'd' || e.key === 'D') {
-            toggleDayNight();
-        } else if (e.key >= '1' && e.key <= '6') {
-            applyTheme(+e.key - 1);
-        }
-    });
-
-    // ── Matrix rain ──
-    (function() {
-        const c = document.getElementById('matrix-bg');
-        const ctx = c.getContext('2d');
-        let w, h, cols, drops, step;
-        const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEF';
-        function resize() {
-            w = c.width = window.innerWidth;
-            h = c.height = window.innerHeight;
-            step = w < 600 ? 20 : 14;
-            cols = Math.floor(w / step);
-            drops = Array(cols).fill(1);
-        }
-        resize();
-        window.addEventListener('resize', resize);
-        function draw() {
-            ctx.fillStyle = 'rgba(10,10,10,0.05)';
-            ctx.fillRect(0, 0, w, h);
-            ctx.fillStyle = rainColor;
-            ctx.font = '12px Fira Code';
-            for (let i = 0; i < cols; i++) {
-                const ch = chars[Math.floor(Math.random() * chars.length)];
-                ctx.fillText(ch, i * step, drops[i] * step);
-                if (drops[i] * step > h && Math.random() > 0.975) drops[i] = 0;
-                drops[i]++;
-            }
-            requestAnimationFrame(draw);
-        }
-        draw();
+      paint();
     })();
-
-    // ── Floating graph background ──
-    (function() {
-        const c = document.getElementById('graph-bg');
-        const ctx = c.getContext('2d');
-        const dpr = window.devicePixelRatio || 1;
-        const nodes = [
-            {x:.12,y:.20,r:5,s:.7,o:0},{x:.30,y:.12,r:7,s:.5,o:1},{x:.52,y:.28,r:6,s:.8,o:2},
-            {x:.78,y:.15,r:5,s:.6,o:3},{x:.90,y:.35,r:4,s:.9,o:4},{x:.18,y:.50,r:6,s:.4,o:5},
-            {x:.42,y:.55,r:7,s:.6,o:6},{x:.65,y:.48,r:5,s:.7,o:7},{x:.85,y:.60,r:6,s:.5,o:8},
-            {x:.08,y:.78,r:4,s:.8,o:9},{x:.35,y:.82,r:6,s:.5,o:10},{x:.58,y:.75,r:5,s:.7,o:11},
-            {x:.80,y:.85,r:7,s:.4,o:12},{x:.50,y:.42,r:4,s:.9,o:13},
-        ];
-        const edges = [[0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],[5,9],[9,10],[10,11],[11,12],[1,6],[2,7],[6,13],[13,2],[13,7],[10,6],[3,8]];
-        let w, h;
-        function resize() {
-            w = c.offsetWidth; h = c.offsetHeight;
-            c.width = w * dpr; c.height = h * dpr;
-            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        }
-        resize();
-        window.addEventListener('resize', resize);
-        function draw(t) {
-            ctx.clearRect(0, 0, w, h);
-            const style = getComputedStyle(document.documentElement);
-            const primary = style.getPropertyValue('--primary').trim();
-            const accent2 = style.getPropertyValue('--accent2').trim();
-
-            // DNA double helix (drifts down the left side)
-            drawHelix(t, w * 0.10, primary, accent2);
-
-            const pos = nodes.map(n => ({
-                x: n.x * w + Math.sin(t * 0.0004 * n.s + n.o) * 20,
-                y: n.y * h + Math.cos(t * 0.0003 * n.s + n.o * 1.3) * 16,
-                r: n.r, alt: n.o % 3 === 0
-            }));
-            ctx.lineWidth = 0.6;
-            edges.forEach(([a, b]) => {
-                ctx.beginPath();
-                ctx.moveTo(pos[a].x, pos[a].y);
-                ctx.lineTo(pos[b].x, pos[b].y);
-                ctx.strokeStyle = pos[a].alt ? accent2 : primary;
-                ctx.globalAlpha = 0.4;
-                ctx.stroke();
-            });
-            ctx.globalAlpha = 0.7;
-            pos.forEach(p => {
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-                ctx.fillStyle = p.alt ? accent2 : primary;
-                ctx.fill();
-            });
-            ctx.globalAlpha = 1;
-            requestAnimationFrame(draw);
-        }
-
-        // Vertical DNA double helix scrolling upward; rungs connect the two strands
-        function drawHelix(t, cx, strandCol, rungCol) {
-            const amp = Math.min(28, w * 0.04);   // helix width
-            const spacing = 26;                    // vertical px between base pairs
-            const speed = 0.02;                    // scroll speed
-            const twist = 0.28;                    // phase step per base pair
-            const scroll = (t * speed) % spacing;
-            const count = Math.ceil(h / spacing) + 2;
-            const pts1 = [], pts2 = [];
-            for (let i = 0; i < count; i++) {
-                const y = i * spacing - scroll;
-                const phase = i * twist + t * 0.001;
-                const x1 = cx + Math.sin(phase) * amp;
-                const x2 = cx + Math.sin(phase + Math.PI) * amp;
-                pts1.push({x:x1, y}); pts2.push({x:x2, y, phase});
-            }
-            // Backbones
-            ctx.lineWidth = 1.2;
-            [pts1, pts2].forEach(pts => {
-                ctx.beginPath();
-                pts.forEach((p,i) => i ? ctx.lineTo(p.x,p.y) : ctx.moveTo(p.x,p.y));
-                ctx.strokeStyle = strandCol; ctx.globalAlpha = 0.5; ctx.stroke();
-            });
-            // Base-pair rungs (fade near the crossover for a 3D twist feel)
-            pts1.forEach((p,i) => {
-                const q = pts2[i];
-                const depth = Math.abs(Math.cos(q.phase)); // 0 at crossover, 1 at widest
-                ctx.beginPath();
-                ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y);
-                ctx.strokeStyle = i % 2 ? rungCol : strandCol;
-                ctx.globalAlpha = 0.15 + depth * 0.35;
-                ctx.lineWidth = 0.8 + depth;
-                ctx.stroke();
-            });
-            ctx.globalAlpha = 1;
-        }
-        requestAnimationFrame(draw);
-    })();
-
-    // ── Boot sequence ──
-    (function() {
-        const bootEl = document.getElementById('boot-text');
-        const terminal = document.getElementById('terminal');
-        const lines = [
-            'BIOS v3.14.159 — DCM Systems Inc.',
-            'Memory Test: 16384 MB OK',
-            'Detecting drives... /dev/graph0 found',
-            'Loading kernel modules...',
-            '  [OK] graph-theory.ko',
-            '  [OK] cuda-runtime.ko',
-            '  [OK] ml-pipeline.ko',
-            '  [OK] bio-networks.ko',
-            'Mounting /home/dcm...',
-            'Starting phosphor-terminal v2.0...',
-            '',
-            '> Welcome, visitor.',
-            '> Initializing portfolio...',
-        ];
-        let i = 0;
-        function typeLine() {
-            if (i < lines.length) {
-                bootEl.textContent += lines[i] + '\n';
-                i++;
-                setTimeout(typeLine, 80 + Math.random() * 60);
-            } else {
-                setTimeout(() => {
-                    document.getElementById('boot').classList.add('hidden');
-                    terminal.classList.add('visible');
-                    revealSections();
-                    animateSkills();
-                    typeAbout();
-                }, 600);
-            }
-        }
-        typeLine();
-    })();
-
-    function revealSections() {
-        const sections = document.querySelectorAll('.section');
-        let delay = 0;
-        sections.forEach(s => {
-            setTimeout(() => s.classList.add('visible'), delay);
-            delay += 200;
-        });
-    }
-
-    function animateSkills() {
-        setTimeout(() => drawSkillsChart(), 1200);
-    }
-
-    // ── 2D Skills Bubble Chart ──
-    // x=years experience, y=proficiency(0-100), r=relative commit activity
-    const SKILLS = [
-        {name:'Python',       yrs:12, prof:95, commits:1800, detail:'Primary language · PyPI packages, ML pipelines, GPU libs'},
-        {name:'Graph Theory', yrs:12, prof:95, commits:900,  detail:'Core research area · GRN inference, network analysis'},
-        {name:'Bioinformatics',yrs:13,prof:92, commits:700,  detail:'PhD + postdoc · genomics, epigenetics, metagenomics'},
-        {name:'Machine Learning',yrs:8,prof:90,commits:600,  detail:'Torch, sklearn, CUML · classification, clustering, GNNs'},
-        {name:'RAPIDS/CUDA',  yrs:5,  prof:85, commits:500,  detail:'GPU-accelerated data science · cuDF, cuML, cuGraph'},
-        {name:'R',            yrs:10, prof:80, commits:400,  detail:'Bioconductor, Shiny, ggplot2 · statistical analysis'},
-        {name:'Docker/K8s',   yrs:5,  prof:80, commits:350,  detail:'Containerized deployments · CI/CD, orchestration'},
-        {name:'AWS',          yrs:5,  prof:80, commits:300,  detail:'EC2, S3, Lambda, SageMaker · cloud infrastructure'},
-        {name:'LLMs/Agents',  yrs:3,  prof:82, commits:450,  detail:'AI agents, RAG pipelines, prompt engineering'},
-        {name:'Bash',         yrs:12, prof:75, commits:500,  detail:'Shell scripting, automation, HPC job scheduling'},
-        {name:'Snakemake',    yrs:4,  prof:70, commits:150,  detail:'Reproducible bioinformatics workflows'},
-        {name:'MATLAB',       yrs:6,  prof:65, commits:200,  detail:'GeneSPIDER platform · numerical computing'},
-    ];
-    const maxCommits = Math.max(...SKILLS.map(s=>s.commits));
-    let bubblePositions = []; // store for hit-testing
-    let hoveredSkill = -1;
-
-    function drawSkillsChart() {
-        const c = document.getElementById('skills-chart');
-        if (!c) return;
-        const dpr = window.devicePixelRatio || 1;
-        const w = c.offsetWidth, h = c.offsetHeight;
-        c.width = w * dpr; c.height = h * dpr;
-        const ctx = c.getContext('2d');
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-        const style = getComputedStyle(document.documentElement);
-        const primary = style.getPropertyValue('--primary').trim();
-        const accent2 = style.getPropertyValue('--accent2').trim();
-        const dim = style.getPropertyValue('--dim').trim();
-        const dark = style.getPropertyValue('--dark').trim();
-
-        const pad = {l:45, r:20, t:15, b:30};
-        const pw = w - pad.l - pad.r, ph = h - pad.t - pad.b;
-        const xMin = 0, xMax = 15, yMin = 50, yMax = 100;
-        const isNarrow = w < 480;
-        const rScale = isNarrow ? 0.6 : 1;
-
-        // Grid
-        ctx.strokeStyle = dark; ctx.lineWidth = 0.5;
-        for (let x = 0; x <= xMax; x += 3) {
-            const px = pad.l + (x - xMin) / (xMax - xMin) * pw;
-            ctx.beginPath(); ctx.moveTo(px, pad.t); ctx.lineTo(px, pad.t + ph); ctx.stroke();
-            ctx.fillStyle = dim; ctx.font = '10px Fira Code'; ctx.textAlign = 'center';
-            ctx.fillText(x + 'y', px, h - 8);
-        }
-        for (let y = yMin; y <= yMax; y += 10) {
-            const py = pad.t + ph - (y - yMin) / (yMax - yMin) * ph;
-            ctx.beginPath(); ctx.moveTo(pad.l, py); ctx.lineTo(pad.l + pw, py); ctx.stroke();
-            ctx.fillStyle = dim; ctx.font = '10px Fira Code'; ctx.textAlign = 'right';
-            ctx.fillText(y + '%', pad.l - 6, py + 3);
-        }
-
-        // Bubbles
-        const now = performance.now();
-        bubblePositions = [];
-        SKILLS.forEach((s, i) => {
-            const px = pad.l + (s.yrs - xMin) / (xMax - xMin) * pw;
-            const py = pad.t + ph - (s.prof - yMin) / (yMax - yMin) * ph;
-            const maxR = (8 + (s.commits / maxCommits) * 28) * rScale;
-            const elapsed = Math.max(0, now - skillsStart - i * 80);
-            const r = Math.min(maxR, maxR * Math.min(1, elapsed / 600));
-            const isAlt = i % 3 === 0;
-            const isHovered = hoveredSkill === i;
-            const drawR = isHovered ? r * 1.15 : r;
-
-            bubblePositions.push({x: px, y: py, r: maxR, idx: i});
-
-            // Glow
-            ctx.globalAlpha = isHovered ? 0.35 : 0.15;
-            ctx.beginPath(); ctx.arc(px, py, drawR + 6, 0, Math.PI * 2);
-            ctx.fillStyle = isAlt ? accent2 : primary; ctx.fill();
-
-            // Bubble
-            ctx.globalAlpha = isHovered ? 0.95 : 0.7;
-            ctx.beginPath(); ctx.arc(px, py, drawR, 0, Math.PI * 2);
-            ctx.fillStyle = isAlt ? accent2 : primary; ctx.fill();
-
-            // Border
-            ctx.globalAlpha = 1;
-            ctx.beginPath(); ctx.arc(px, py, drawR, 0, Math.PI * 2);
-            ctx.strokeStyle = isAlt ? accent2 : primary;
-            ctx.lineWidth = isHovered ? 2 : 1; ctx.stroke();
-
-            // Label
-            ctx.fillStyle = isAlt ? accent2 : primary;
-            ctx.font = (isHovered ? 'bold ' : '') + (isNarrow ? '8' : (r > 18 ? '10' : '9')) + 'px Fira Code';
-            ctx.textAlign = 'center';
-            ctx.fillText(s.name, px, py - drawR - 5);
-        });
-
-        if (now - skillsStart < 2000) requestAnimationFrame(drawSkillsChart);
-    }
-
-    // Hover interaction
-    (function() {
-        const c = document.getElementById('skills-chart');
-        const tip = document.getElementById('skill-tooltip');
-        c.addEventListener('mousemove', function(e) {
-            const rect = c.getBoundingClientRect();
-            const mx = e.clientX - rect.left, my = e.clientY - rect.top;
-            let found = -1;
-            for (let i = bubblePositions.length - 1; i >= 0; i--) {
-                const b = bubblePositions[i];
-                const dx = mx - b.x, dy = my - b.y;
-                if (dx*dx + dy*dy <= (b.r + 5) * (b.r + 5)) { found = i; break; }
-            }
-            if (found !== hoveredSkill) {
-                hoveredSkill = found;
-                skillsStart = 0; drawSkillsChart();
-            }
-            if (found >= 0) {
-                const s = SKILLS[found];
-                tip.innerHTML = '<b>' + s.name + '</b><br>' +
-                    s.yrs + ' yrs · ' + s.prof + '% · ~' + s.commits + ' commits<br>' +
-                    '<span style="color:var(--dim)">' + s.detail + '</span>';
-                tip.classList.add('visible');
-                const tx = e.pageX + 15, ty = e.pageY - 10;
-                tip.style.left = tx + 'px'; tip.style.top = ty + 'px';
-            } else {
-                tip.classList.remove('visible');
-            }
-        });
-        c.addEventListener('mouseleave', function() {
-            hoveredSkill = -1; skillsStart = 0; drawSkillsChart();
-            tip.classList.remove('visible');
-        });
-    })();
-    let skillsStart = 0;
-    const origAnimateSkills = animateSkills;
-    animateSkills = function() {
-        skillsStart = performance.now();
-        drawSkillsChart();
-    };
-    // Redraw on theme change
-    const origApply = applyTheme;
-    applyTheme = function(idx) { origApply(idx); setTimeout(drawSkillsChart, 50); };
-    // Redraw on resize
-    window.addEventListener('resize', () => { skillsStart = 0; drawSkillsChart(); });
-
-    function typeAbout() {
-        const text = "Bioinformaticist turned Engineer. 10+ years working with universities and companies worldwide. Building products that solve real-world problems using graph-based structures and advanced technologies.";
-        const el = document.getElementById('about-typed');
-        let i = 0;
-        el.classList.add('typed-text');
-        function type() {
-            if (i < text.length) {
-                el.textContent += text[i];
-                i++;
-                setTimeout(type, 18);
-            } else {
-                el.classList.add('done');
-            }
-        }
-        setTimeout(type, 1000);
-    }
-
-    function scrollToSection(id) {
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        event.target.classList.add('active');
-        document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-
-    (function() {
-        function tick() {
-            const d = new Date();
-            document.getElementById('clock').textContent =
-                d.toISOString().slice(0,19).replace('T',' ') + ' UTC';
-        }
-        tick();
-        setInterval(tick, 1000);
-    })();
-
-    // ── Sortable Publications ──
-    const PUBS = [
-        {t:'The Network Zoo: a multilingual package for the inference and analysis of gene regulatory networks',a:'M Ben Guebila, T Wang, CM Lopes-Ramos, V Fanfani, D Weighill, ...',j:'Genome Biology',y:2023,c:45,url:'https://doi.org/10.1186/s13059-023-02853-7'},
-        {t:'Altered human gut virome in patients undergoing antibiotics therapy for Helicobacter pylori',a:'L Wang, H Yao, DC Morgan, KS Lau, SY Leung, JWK Ho, WK Leung',j:'Nature Communications',y:2023,c:41,url:'https://doi.org/10.1038/s41467-023-37975-y'},
-        {t:'Uncovering cancer gene regulation by accurate regulatory network inference from uninformative data',a:'D Seçilmiş, T Hillerton, D Morgan, A Tjärnberg, S Nelander, ...',j:'NPJ Systems Biology and Applications',y:2020,c:27,url:'https://doi.org/10.1038/s41540-020-00158-0'},
-        {t:'GeneSPIDER — Gene regulatory network inference benchmarking with controlled network and data properties',a:'A Tjärnberg, D Morgan, M Studham, TEM Nordling, E Sonnhammer',j:'Molecular Biosystems',y:2017,c:25,url:'https://doi.org/10.1039/C7MB00058H'},
-        {t:'Perturbation-based gene regulatory network inference to unravel oncogenic mechanisms',a:'D Morgan, M Studham, A Tjärnberg, H Weishaupt, FJ Swartling, ...',j:'Scientific Reports',y:2020,c:21,url:'https://doi.org/10.1038/s41598-020-70941-y'},
-        {t:'A generalized framework for controlling FDR in gene regulatory network inference',a:'D Morgan, A Tjärnberg, TEM Nordling, ELL Sonnhammer',j:'Bioinformatics',y:2019,c:20,url:'https://doi.org/10.1093/bioinformatics/bty764'},
-        {t:'Using methylation data to improve transcription factor binding prediction',a:'D Morgan, DL DeMeo, K Glass',j:'Epigenetics',y:2024,c:8,url:'https://doi.org/10.1080/15592294.2024.2309826'},
-        {t:'gpuZoo: Cost-effective estimation of gene regulatory networks using the Graphics Processing Unit',a:'MB Guebila, DC Morgan, K Glass, ML Kuijjer, DL DeMeo, J Quackenbush',j:'NAR Genomics and Bioinformatics',y:2022,c:7,url:'https://doi.org/10.1093/nargab/lqac002'},
-        {t:'GeneSPIDER2: large scale GRN simulation and benchmarking with perturbed single-cell data',a:'M Garbulowski, T Hillerton, D Morgan, D Seçilmiş, ...',j:'NAR Genomics and Bioinformatics',y:2024,c:11,url:'https://doi.org/10.1093/nargab/lqae121'},
-        {t:'MetaQuad: shared informative variants discovery in metagenomic samples',a:'S Xu, DC Morgan, G Qian, Y Huang, JWK Ho',j:'Bioinformatics Advances',y:2024,c:1,url:'https://doi.org/10.1093/bioadv/vbae030'},
-    ];
-    function renderPubs(list) {
-        document.getElementById('pubs-list').innerHTML = list.map(p =>
-            '<div class="entry"><a href="'+p.url+'" target="_blank" style="border-bottom:none;"><span class="entry-title" style="color:var(--title);">'+p.t+'</span></a><br>'+
-            '<span class="entry-meta">'+p.a+' · '+p.j+', '+p.y+'</span><br>'+
-            (p.c ? '<span class="entry-desc">Cited by '+p.c+'</span> · ' : '')+
-            '<a href="'+p.url+'" target="_blank" style="font-size:11px;">→ paper</a></div>'
-        ).join('');
-    }
-    function sortPubs(by, btn) {
-        const active = btn.classList.contains('active');
-        // toggle direction on repeat press; default descending
-        btn._desc = active ? !(btn._desc !== false) : true;
-        const desc = btn._desc;
-        btn.parentElement.querySelectorAll('.nav-btn').forEach(b=>{
-            b.classList.remove('active');
-            b.textContent = b.textContent.replace(/ [\u25bc\u25b2]$/, '');
-        });
-        btn.classList.add('active');
-        btn.textContent = 'sort: ' + by + (desc ? ' \u25bc' : ' \u25b2');
-        const key = by === 'citations' ? 'c' : 'y';
-        const sorted = [...PUBS].sort((a,b) => desc ? b[key]-a[key] : a[key]-b[key]);
-        renderPubs(sorted);
-    }
-    renderPubs([...PUBS].sort((a,b)=>b.c-a.c));
-    // Citation summary computed from PUBS (h-index = max h where h papers have >= h cites)
-    (function() {
-        const counts = PUBS.map(p=>p.c).sort((a,b)=>b-a);
-        const total = counts.reduce((s,c)=>s+c,0);
-        let hIndex = 0;
-        counts.forEach((c,i)=>{ if (c >= i+1) hIndex = i+1; });
-        document.getElementById('cite-summary').textContent =
-            '— ' + total + '+ citations · h-index: ' + hIndex;
-    })();
-
-    // ── Sortable Projects ──
-    const PROJECTS = [
-        {name:'herdr-remote',desc:'Agent dashboard for herdr.dev — monitor & control local AI coding agents from menu bar, phone, or Telegram.',tags:['Python','Swift','WebSocket','PWA'],url:'https://github.com/dcolinmorgan/herdr-remote',year:2025},
-        {name:'cu-cat',desc:'End-to-end GPU feature encoder.',tags:['RAPIDS','CUML','GPU'],url:'https://github.com/graphistry/cu-cat/',year:2023},
-        {name:'Graphistry',desc:'Graph visualization on GPUs.',tags:['network-sci','RAPIDS'],url:'https://graphistry.com/',year:2022},
-        {name:'NetZoo',desc:'Message passing algorithms for bio networks.',tags:['Python','R'],url:'https://netzoo.github.io/',year:2020},
-        {name:'cancer-grn',desc:'Shiny app for network viz & overlap analysis of oncogenic GRNs.',tags:['R','Shiny','igraph'],url:'https://github.com/dcolinmorgan/cancer-grn',live:'https://dcolin.shinyapps.io/cancergrn/',year:2020},
-        {name:'Viral_Snake',desc:'Viral metagenomics workflow.',tags:['snakemake','singularity'],url:'https://github.com/dcolinmorgan/viral_snake',year:2021},
-        {name:'pyGS',desc:'Python NestBoot-FDR for gene regulatory network inference benchmarking.',tags:['Python','bootstrap','GRN'],url:'https://github.com/dcolinmorgan/pyGS',year:2024},
-        {name:'mili_benchmark',desc:'Benchmark methylation as proxy to infer TF binding.',tags:['Python','Bash','R','methylation'],url:'https://github.com/dcolinmorgan/mili_benchmark',year:2019},
-        {name:'GeneSPIDER',desc:'Synthetic bio data & network inference.',tags:['MATLAB','R'],url:'https://sonnhammer-tutorials.bitbucket.io/genespider.html',year:2017},
-    ];
-    function renderProjects(list) {
-        document.getElementById('projects-list').innerHTML = list.map(p =>
-            '<div class="project-card"><span class="entry-title">'+p.name+'</span> <span class="entry-desc" style="font-size:10px;">('+p.year+')</span><br>'+
-            '<span class="entry-desc">'+p.desc+'</span><br>'+
-            p.tags.map(t=>'<span class="tag">'+t+'</span>').join('')+'<br>'+
-            '<a href="'+p.url+'" target="_blank">→ repo</a>'+
-            (p.live ? ' · <a href="'+p.live+'" target="_blank">→ live</a>' : '')+'</div>'
-        ).join('');
-    }
-    function sortProjects(by, btn) {
-        const active = btn.classList.contains('active');
-        btn._desc = active ? !(btn._desc !== false) : true;
-        const desc = btn._desc;
-        btn.parentElement.querySelectorAll('.nav-btn').forEach(b=>{
-            b.classList.remove('active');
-            b.textContent = b.textContent.replace(/ [\u25bc\u25b2]$/, '');
-        });
-        btn.classList.add('active');
-        // 'newest' desc = newest first; label reflects direction of years
-        btn.textContent = 'sort: ' + by + (desc ? ' \u25bc' : ' \u25b2');
-        const newestFirst = (by === 'newest') === desc;
-        const sorted = [...PROJECTS].sort((a,b) => newestFirst ? b.year-a.year : a.year-b.year);
-        renderProjects(sorted);
-    }
-    renderProjects([...PROJECTS].sort((a,b)=>b.year-a.year));
-
-    // ── fastfetch-style system card (#4) ──
-    function neofetch() {
-        const yrs = new Date().getFullYear() - 2012;
-        const logo = [
-            ' ____   ____ __  __',
-            '|  _ \\ / ___|  \\/  |',
-            '| | | | |   | |\\/| |',
-            '| |_| | |___| |  | |',
-            '|____/ \\____|_|  |_|',
-        ];
-        const info = [
-            ['dcm', '@world'],
-            ['-----', ''],
-            ['OS', 'PortfolioOS ' + new Date().getFullYear() + ' (phosphor)'],
-            ['Host', 'Stockholm, Sweden'],
-            ['Kernel', 'graph-theory 6.02e23'],
-            ['Uptime', yrs + ' years, still compiling'],
-            ['Shell', '/bin/dcm'],
-            ['Role', 'Graph-Based Research Scientist & Engineer'],
-            ['Packages', PROJECTS.length + ' side-projects, ' + PUBS.length + ' papers'],
-            ['Theme', THEMES[currentTheme].name + ' [' + (dayMode?'day':'night') + ']'],
-            ['CPU', 'Bioinformatics → Engineering'],
-            ['Memory', PUBS.reduce((s,p)=>s+p.c,0) + '+ citations · h-index 8'],
-        ];
-        let out = '<div style="display:flex; gap:1.5rem; flex-wrap:wrap;">';
-        out += '<pre style="color:var(--accent2); margin:0;">' + logo.join('\n') + '</pre>';
-        out += '<div>' + info.map(([k,v]) => v === ''
-            ? (k.startsWith('-') ? '<span class="entry-desc">'+k+'</span>' : '<span style="color:var(--accent1);">'+k+'</span>')
-            : '<span style="color:var(--accent1);">'+k+'</span>: <span class="entry-desc">'+v+'</span>'
-        ).join('<br>') + '</div>';
-        out += '</div>';
-        return out;
-    }
-
-    // ── Interactive shell (#1) ──
-    (function() {
-        const input = document.getElementById('shell-input');
-        const outEl = document.getElementById('shell-output');
-        const history = [];
-        let histIdx = -1;
-
-        function print(html) {
-            const div = document.createElement('div');
-            div.style.marginBottom = '0.5rem';
-            div.innerHTML = html;
-            outEl.appendChild(div);
-        }
-        function echo(cmd) {
-            print('<span class="prompt">dcm@world</span>:<span class="path">~</span>$ <span class="cmd">' + escapeHtml(cmd) + '</span>');
-        }
-        function escapeHtml(s) {
-            return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-        }
-
-        const COMMANDS = {
-            help: () => 'Available commands:<br>' + [
-                'about        — who is dcm',
-                'whoami       — short answer',
-                'neofetch     — system info card',
-                'ls           — list sections',
-                'cd <section> — jump to section (work, edu, pubs, skills, projects)',
-                'projects     — list side projects',
-                'pubs         — list publications',
-                'skills       — list skills',
-                'theme <name> — ' + THEMES.map(t=>t.name).join(', '),
-                'day / night  — toggle day mode',
-                'social       — links',
-                'date         — current time',
-                'clear        — clear the screen',
-                'sudo         — try it',
-            ].map(l => '&nbsp;&nbsp;' + l).join('<br>'),
-            about: () => 'Daniel C Morgan — Graph-Based Research Scientist & Engineer, Stockholm SE.<br>Bioinformaticist turned Engineer. 10+ years across universities and companies worldwide.',
-            whoami: () => 'dcm — he builds products that solve real problems with graph-based structures.',
-            neofetch: () => neofetch(),
-            ls: () => ['about','work','edu','pubs','skills','projects'].map(s=>'<span class="path">'+s+'/</span>').join('&nbsp;&nbsp;'),
-            projects: () => PROJECTS.slice().sort((a,b)=>b.year-a.year).map(p =>
-                '<span class="entry-title">'+p.name+'</span> ('+p.year+') — <span class="entry-desc">'+p.desc+'</span>').join('<br>'),
-            pubs: () => PUBS.slice().sort((a,b)=>b.c-a.c).map(p =>
-                '<span class="entry-desc">['+p.y+']</span> '+p.t+' <span class="entry-meta">('+p.c+' cites)</span>').join('<br>'),
-            skills: () => SKILLS.map(s=>'<span class="entry-title">'+s.name+'</span> <span class="entry-desc">'+s.yrs+'y · '+s.prof+'%</span>').join('<br>'),
-            social: () => 'LinkedIn: <a href="https://www.linkedin.com/in/dcolinmorgan" target="_blank">linkedin.com/in/dcolinmorgan</a><br>'+
-                'GitHub: <a href="https://github.com/dcolinmorgan" target="_blank">github.com/dcolinmorgan</a><br>'+
-                'Twitter: <a href="https://x.com/dcolinmorgan" target="_blank">x.com/dcolinmorgan</a><br>'+
-                'Graffold: <a href="https://graffold.com" target="_blank">graffold.com</a>',
-            date: () => new Date().toISOString().slice(0,19).replace('T',' ') + ' UTC',
-            day: () => { if (!dayMode) toggleDayNight(); return 'day mode on'; },
-            night: () => { if (dayMode) toggleDayNight(); return 'night mode on'; },
-            sudo: () => '<span style="color:var(--accent3);">dcm is not in the sudoers file. This incident will be reported.</span>',
-            clear: () => { outEl.innerHTML = ''; return null; },
-        };
-        const SECTION_MAP = {work:'experience', edu:'education', pubs:'publications', skills:'skills', projects:'projects', about:'about'};
-
-        function run(raw) {
-            const line = raw.trim();
-            if (!line) return;
-            echo(line);
-            history.unshift(line); histIdx = -1;
-            const [cmd, ...args] = line.split(/\s+/);
-            const arg = args.join(' ').toLowerCase();
-
-            if (cmd === 'cd') {
-                const id = SECTION_MAP[arg];
-                if (id) { document.getElementById(id).scrollIntoView({behavior:'smooth'}); print('→ '+arg); }
-                else print('<span style="color:var(--accent3);">cd: no such section: '+escapeHtml(arg)+'</span>');
-                return;
-            }
-            if (cmd === 'cat') {
-                if (arg.includes('about')) { print(COMMANDS.about()); return; }
-                print('<span style="color:var(--accent3);">cat: '+escapeHtml(arg)+': No such file</span>'); return;
-            }
-            if (cmd === 'theme') {
-                const i = THEMES.findIndex(t => t.name === arg);
-                if (i >= 0) { applyTheme(i); print('theme → '+arg); }
-                else print('<span style="color:var(--accent3);">theme: unknown \''+escapeHtml(arg)+'\'. Try: '+THEMES.map(t=>t.name).join(', ')+'</span>');
-                return;
-            }
-            const fn = COMMANDS[cmd];
-            if (fn) { const r = fn(); if (r !== null) print(r); }
-            else print('<span style="color:var(--accent3);">command not found: '+escapeHtml(cmd)+'</span> — type <span style="color:var(--accent2);">help</span>');
-        }
-
-        input.addEventListener('keydown', e => {
-            if (e.key === 'Escape') {
-                input.blur();
-            } else if (e.key === 'Enter') {
-                run(input.value); input.value = '';
-                input.scrollIntoView({behavior:'smooth', block:'nearest'});
-            } else if (e.key === 'ArrowUp') {
-                e.preventDefault();
-                if (histIdx < history.length - 1) { histIdx++; input.value = history[histIdx]; }
-            } else if (e.key === 'ArrowDown') {
-                e.preventDefault();
-                if (histIdx > 0) { histIdx--; input.value = history[histIdx]; }
-                else { histIdx = -1; input.value = ''; }
-            }
-        });
-        input.addEventListener('focus', () => setMode('INSERT'));
-        input.addEventListener('blur', () => setMode('NORMAL'));
-        // Focus prompt when clicking anywhere in the shell section
-        document.getElementById('shell').addEventListener('click', () => input.focus());
-    })();
-
-    // ── Konami code easter egg (#2) ──
-    (function() {
-        const seq = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
-        let pos = 0;
-        document.addEventListener('keydown', e => {
-            if (e.target.tagName === 'INPUT') return;
-            const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
-            pos = (key === seq[pos]) ? pos + 1 : (key === seq[0] ? 1 : 0);
-            if (pos === seq.length) { pos = 0; unlock(); }
-        });
-        function unlock() {
-            const toast = document.getElementById('theme-toast');
-            toast.textContent = '> ░▒▓ GOD MODE ↓→← ▓▒░';
-            toast.classList.add('show');
-            clearTimeout(toast._tid);
-            toast._tid = setTimeout(() => toast.classList.remove('show'), 2500);
-            // rapid theme flash, then land on cyberpunk
-            let n = 0;
-            const flash = setInterval(() => {
-                applyTheme(n % THEMES.length); n++;
-                if (n > 12) { clearInterval(flash); applyTheme(2); }
-            }, 90);
-        }
-    })();
-
-    </script>
+  </script>
 </body>
 </html>
