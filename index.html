@@ -337,9 +337,8 @@
       margin: 0 auto;
       width: max-content;
       max-width: 100%;
-      min-height: 16em;
-      font-size: clamp(12px, 2.4vw, 14px);
-      line-height: 1.15;
+      font-size: clamp(11px, 2vw, 13px);
+      line-height: 1.08;
       color: var(--text);
     }
 
@@ -366,10 +365,16 @@
     }
 
     .shell-log {
+      max-height: 4.5rem;
       margin: 0 0 0.35rem;
+      overflow-x: hidden;
+      overflow-y: auto;
+      overscroll-behavior: contain;
       white-space: pre-wrap;
       font-size: 0.92rem;
     }
+
+    .shell-log:empty { display: none; margin: 0; }
 
     .shell-log p { margin: 0.12rem 0; }
 
@@ -644,6 +649,33 @@
       .chrome { grid-template-columns: auto 1fr; }
 
       .theme-btn { justify-self: end; }
+
+      .fold { margin-bottom: 0.7rem; }
+
+      .viz-panel { padding: 0.3rem 0.2rem 0.4rem; }
+
+      .viz {
+        font-size: 8px;
+        line-height: 1.05;
+      }
+
+      .fold figcaption {
+        margin-top: 0.25rem;
+        font-size: 0.78rem;
+        line-height: 1.35;
+      }
+
+      .shell { padding: 0.35rem 0.75rem 0.4rem; }
+
+      .shell-log { max-height: 2.7rem; }
+
+      .shell-line input { padding: 0.15rem 0; }
+
+      .fallback {
+        gap: 0.1rem 0.55rem;
+        margin-top: 0.15rem;
+        font-size: 0.8rem;
+      }
 
       .interests li { grid-template-columns: 1fr; gap: 0.1rem; }
 
@@ -1293,7 +1325,8 @@
     var p = document.createElement("p");
     p.textContent = text;
     log.appendChild(p);
-    while (log.children.length > 8) log.removeChild(log.firstChild);
+    while (log.children.length > 4) log.removeChild(log.firstChild);
+    log.scrollTop = log.scrollHeight;
   }
 
   function helpText() {
