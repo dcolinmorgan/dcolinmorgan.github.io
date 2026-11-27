@@ -298,6 +298,16 @@
 
     .no-js .theme-btn { display: none; }
 
+    a.theme-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .no-js a.theme-btn { display: inline-flex; }
+
     .theme-btn .when-light { display: none; }
 
     @media (prefers-color-scheme: light) {
@@ -708,6 +718,7 @@
         <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
         <p class="chrome-title" id="chrome-title">dcm@bio — zsh</p>
         <div class="chrome-actions">
+          <a class="theme-btn" id="su-tech" href="tech.html#tech">su tech</a>
           <button type="button" class="theme-btn" id="mol-cycle" aria-label="Next molecule, currently caffeine">caffeine</button>
           <button type="button" class="theme-btn" id="theme-toggle" aria-pressed="false">
             <span class="when-dark">Use light theme</span><span class="when-light">Use dark theme</span>

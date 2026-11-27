@@ -485,14 +485,14 @@
             <div class="mobile-logo">DCM<span class="cursor"></span></div>
 
             <div class="nav">
+                <a class="nav-btn" href="index.html#bio" onclick="try{localStorage.setItem('dcm-persona','bio')}catch(e){}" style="display:inline-block;text-decoration:none;border:1px solid var(--dark);">su bio</a>
                 <button class="nav-btn active" onclick="scrollToSection('about')">> about</button>
                 <button class="nav-btn" onclick="scrollToSection('experience')">> work</button>
                 <button class="nav-btn" onclick="scrollToSection('education')">> edu</button>
                 <button class="nav-btn" onclick="scrollToSection('publications')">> pubs</button>
                 <button class="nav-btn" onclick="scrollToSection('skills')">> skills</button>
                 <button class="nav-btn" onclick="scrollToSection('projects')">> projects</button>
-                <a class="nav-btn" href="index.html#bio" onclick="try{localStorage.setItem('dcm-persona','bio')}catch(e){}" style="display:inline-block;text-decoration:none;margin-left:auto;">su bio</a>
-                <button class="print-btn" onclick="window.print()">⎙ PDF</button>
+                <button class="print-btn" onclick="window.print()" style="margin-left:auto;">⎙ PDF</button>
             </div>
 
             <!-- ABOUT -->
