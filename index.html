@@ -67,6 +67,20 @@
   <script>
     (function () {
       try {
+        var saved = localStorage.getItem("dcm-persona");
+        var hash = location.hash;
+        if (hash === "#tech" || ((hash === "" || hash === "#") && saved === "tech")) {
+          location.replace(new URL("tech.html#tech", location.href).href);
+        } else if (hash === "#bio") {
+          localStorage.setItem("dcm-persona", "bio");
+        }
+      } catch (e) {}
+    })();
+  </script>
+
+  <script>
+    (function () {
+      try {
         document.documentElement.classList.remove("no-js");
         var t = localStorage.getItem("dcm-appearance");
         if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t);
@@ -397,17 +411,6 @@
       font-weight: 600;
     }
 
-    .tech-frame {
-      display: block;
-      width: 100%;
-      height: min(72vh, 860px);
-      border: 0;
-      background: #0a0a0a;
-    }
-
-    .tech-frame[hidden],
-    #bio-panel[hidden] { display: none !important; }
-
     .prompt {
       margin: 0 0 0.85rem;
       font-size: 1rem;
@@ -671,7 +674,7 @@
       body { background: #fff; color: #000; }
       .page { width: 100%; padding: 0; }
       .term { border: 0; box-shadow: none; background: #fff; }
-      .chrome, .theme-btn, .caret, .jumps, .shell, .tech-frame { display: none; }
+      .chrome, .theme-btn, .caret, .jumps, .shell { display: none; }
       a { color: #000; }
       .out { border-left-color: #ccc; }
     }
@@ -697,11 +700,14 @@
           <input id="command" name="command" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Command">
         </label>
         <p class="fallback">
-          <a href="#bio" data-persona="bio" aria-current="true">su bio</a>
-          <a href="tech.html" data-persona="tech">su tech</a>
-          <a href="#structure" data-viz="dna">viz dna</a>
-          <a href="#structure" data-viz="protein">viz protein</a>
+          <a href="index.html#bio" data-persona="bio" aria-current="true">su bio</a>
+          <a href="tech.html#tech" data-persona="tech">su tech</a>
           <a href="#structure" data-viz="caffeine">viz caffeine</a>
+          <a href="#structure" data-viz="aspirin">viz aspirin</a>
+          <a href="#structure" data-viz="serotonin">viz serotonin</a>
+          <a href="#structure" data-viz="dopamine">viz dopamine</a>
+          <a href="#structure" data-viz="glucose">viz glucose</a>
+          <a href="#structure" data-viz="ethanol">viz ethanol</a>
         </p>
       </form>
 
@@ -710,28 +716,29 @@
         <header class="block">
           <p class="prompt" id="structure">
             <span class="sr-only">Structure sketch. </span>
-            <span class="user">dcm</span><span class="punct">@</span><span class="host">bio</span><span class="punct">:</span><span class="path">~</span><span class="dollar">$ </span><span class="cmd" id="viz-cmd">viz dna</span>
+            <span class="user">dcm</span><span class="punct">@</span><span class="host">bio</span><span class="punct">:</span><span class="path">~</span><span class="dollar">$ </span><span class="cmd" id="viz-cmd">viz caffeine</span>
           </p>
           <figure class="fold">
             <div class="viz-panel">
-              <pre class="viz" id="viz" aria-hidden="true">        <span class="b">··●</span><span class="d">─────────────</span><span class="a">●··</span>       
-      <span class="b">●</span><span class="c">─────────────────────</span><span class="a">●</span>     
-     <span class="b">●</span><span class="d">───────────────────────</span><span class="a">●</span>    
-        <span class="b">·●</span><span class="c">───────────────</span><span class="a">●·</span>       
-             <span class="b">···●</span><span class="a">·●···</span>            
-         <span class="a">··●</span><span class="c">───────────</span><span class="b">●··</span>        
-      <span class="a">●</span><span class="d">─────────────────────</span><span class="b">●</span>     
-     <span class="a">●</span><span class="c">───────────────────────</span><span class="b">●</span>    
-        <span class="a">·●</span><span class="d">───────────────</span><span class="b">●·</span>       
-             <span class="a">···●·</span><span class="b">●···</span>            
-         <span class="b">··●</span><span class="d">───────────</span><span class="a">●··</span>        
-      <span class="b">●</span><span class="c">─────────────────────</span><span class="a">●</span>     
-     <span class="b">●</span><span class="d">───────────────────────</span><span class="a">●</span>    
-        <span class="b">·●</span><span class="c">───────────────</span><span class="a">●·</span>       
-             <span class="b">··●</span><span class="d">───</span><span class="a">●··</span>            
-            <span class="a">●</span><span class="c">─────────</span><span class="b">●</span>           </pre>
+              <pre class="viz" id="viz" aria-hidden="true">
+
+                     <span class="d">O</span>
+                     <span class="f">│</span>    <span class="c">C</span>
+                    <span class="f">│</span>    <span class="f">/</span>
+               <span class="c">C</span>    <span class="c">C</span>    <span class="f">/</span>
+                <span class="f">\</span> <span class="f">//</span> <span class="f">\</span> <span class="f">/</span><span class="b">N</span>
+                 <span class="b">N</span>    <span class="c">C</span> <span class="f">│</span>
+                 <span class="f">│</span>    <span class="f">│</span> <span class="f">│</span>
+                 <span class="f">│</span>    <span class="f">│</span>  <span class="f">│</span>
+                <span class="f">│</span>    <span class="f">│</span>   <span class="c">C</span>
+                <span class="c">C</span>    <span class="c">C</span>  <span class="f">/</span>
+              <span class="d">O</span><span class="f">/</span> <span class="f">\</span> <span class="f">//</span> <span class="f">\</span><span class="b">N</span>
+                  <span class="b">N</span>
+                  <span class="f">│</span>
+                 <span class="f">│</span>
+                 <span class="c">C</span></pre>
             </div>
-            <figcaption id="viz-caption">ASCII sketch of a DNA turn. Not a deposited structure.</figcaption>
+            <figcaption id="viz-caption">Caffeine. PubChem CID 2519 3D conformer, hydrogens omitted.</figcaption>
           </figure>
           <p class="prompt">
             <span class="user">dcm</span><span class="punct">@</span><span class="host">bio</span><span class="punct">:</span><span class="path">~</span><span class="dollar">$ </span><span class="typed" style="--chars: 6">whoami</span><span class="caret" aria-hidden="true"></span>
@@ -1061,7 +1068,6 @@
         </section>
       </main>
       </div>
-      <iframe id="tech-frame" class="tech-frame" title="dcm@tech, the previous portfolio" hidden></iframe>
 
       <footer class="session-end">
         <p class="copy">© 2026 Daniel C Morgan</p>
@@ -1102,28 +1108,41 @@
   </script>
   <script>
 (function () {
+  var savedPersona = null;
+  try { savedPersona = localStorage.getItem("dcm-persona"); } catch (e) {}
+  if (location.hash === "#tech" || ((location.hash === "" || location.hash === "#") && savedPersona === "tech")) {
+    location.replace(new URL("tech.html#tech", location.href).href);
+    return;
+  }
+  if (location.hash === "#bio") {
+    try { localStorage.setItem("dcm-persona", "bio"); } catch (e) {}
+  }
+
   var vizEl = document.getElementById("viz");
   var caption = document.getElementById("viz-caption");
   var vizCmd = document.getElementById("viz-cmd");
-  var hostEl = document.getElementById("persona-host");
-  var chromeTitle = document.getElementById("chrome-title");
-  var bioPanel = document.getElementById("bio-panel");
-  var frame = document.getElementById("tech-frame");
   var form = document.getElementById("shell");
   var input = document.getElementById("command");
   var log = document.getElementById("shell-log");
   var motion = window.matchMedia("(prefers-reduced-motion: reduce)");
-  var persona = "bio";
-  var vizName = "dna";
-  var phase = 0.6;
+  var vizName = "caffeine";
+  var phase = 0.8;
   var timer = 0;
   var history = [];
   var histIdx = -1;
-  var captions = {
-    dna: "ASCII sketch of a DNA turn. Not a deposited structure.",
-    protein: "ASCII sketch of a helix and a hairpin. Not a deposited structure.",
-    caffeine: "ASCII schematic of caffeine. Not crystallographic coordinates."
+  var vizPaused = false;
+
+  // PubChem 3D conformers, coordinates in angstroms, rounded to 0.01.
+  // Hydrogens omitted except for ethanol. CIDs are PubChem compound IDs.
+  var MOLS = {
+    caffeine: {cid:2519, caption:"Caffeine. PubChem CID 2519 3D conformer, hydrogens omitted.", atoms:[["O",0.47,2.57,0.00],["O",-3.13,-0.44,-0.00],["N",-0.97,-1.31,0.00],["N",2.22,0.14,-0.00],["N",-1.35,1.08,-0.00],["N",1.41,-1.94,0.00],["C",0.86,0.26,-0.00],["C",0.39,-1.03,-0.00],["C",0.03,1.42,-0.00],["C",-1.91,-0.25,-0.00],["C",2.50,-1.20,0.00],["C",-1.43,-2.70,0.00],["C",3.19,1.21,0.00],["C",-2.30,2.19,0.00]], bonds:[[0,8],[1,9],[2,7],[2,9],[2,11],[3,6],[3,10],[3,12],[4,8],[4,9],[4,13],[5,7],[5,10],[6,7],[6,8]]},
+    aspirin: {cid:2244, caption:"Aspirin. PubChem CID 2244 3D conformer, hydrogens omitted.", atoms:[["O",1.23,0.55,0.78],["O",-0.70,-2.71,-0.75],["O",0.80,-2.18,0.87],["O",1.78,0.81,-1.48],["C",-0.09,0.61,0.44],["C",-0.79,-0.55,0.12],["C",-0.73,1.85,0.41],["C",-2.14,-0.47,-0.22],["C",-2.08,1.92,0.07],["C",-2.79,0.76,-0.25],["C",-0.14,-1.85,0.15],["C",2.11,0.67,-0.31],["C",3.53,0.60,0.16]], bonds:[[0,4],[0,11],[1,10],[2,10],[3,11],[4,5],[4,6],[5,7],[5,10],[6,8],[7,9],[8,9],[11,12]]},
+    serotonin: {cid:5202, caption:"Serotonin. PubChem CID 5202 3D conformer, hydrogens omitted.", atoms:[["O",2.74,2.46,0.10],["N",0.11,-2.35,-0.11],["N",-4.24,1.57,-0.29],["C",-1.19,-0.60,0.34],["C",0.15,-0.14,0.18],["C",-2.37,0.22,0.64],["C",0.94,-1.25,-0.10],["C",-1.18,-1.97,0.15],["C",-3.09,0.74,-0.62],["C",0.76,1.13,0.25],["C",2.32,-1.16,-0.32],["C",2.14,1.24,0.03],["C",2.91,0.11,-0.25]], bonds:[[0,11],[1,6],[1,7],[2,8],[3,4],[3,5],[3,7],[4,6],[4,9],[5,8],[6,10],[9,11],[10,12],[11,12]]},
+    dopamine: {cid:681, caption:"Dopamine. PubChem CID 681 3D conformer, hydrogens omitted.", atoms:[["O",-2.24,1.96,0.05],["O",-3.36,-0.56,0.39],["N",4.41,0.26,0.34],["C",2.16,-0.02,-0.66],["C",0.70,-0.16,-0.39],["C",2.99,0.10,0.63],["C",-0.10,0.98,-0.29],["C",0.14,-1.43,-0.22],["C",-1.46,0.85,-0.03],["C",-1.22,-1.56,0.04],["C",-2.02,-0.42,0.13]], bonds:[[0,8],[1,10],[2,5],[3,4],[3,5],[4,6],[4,7],[6,8],[7,9],[8,10],[9,10]]},
+    glucose: {cid:5793, caption:"D-glucose. PubChem CID 5793 3D conformer, hydrogens omitted.", atoms:[["O",-0.67,1.16,0.26],["O",-0.89,-2.45,-0.34],["O",1.86,-2.07,0.47],["O",2.86,0.54,-0.46],["O",1.12,2.66,0.26],["O",-3.37,0.97,-0.19],["C",-0.37,-1.25,0.23],["C",1.09,-1.07,-0.19],["C",-1.22,-0.06,-0.24],["C",1.61,0.32,0.18],["C",0.64,1.41,-0.25],["C",-2.65,-0.16,0.27]], bonds:[[0,8],[0,10],[1,6],[2,7],[3,9],[4,10],[5,11],[6,7],[6,8],[7,9],[8,11],[9,10]]},
+    ethanol: {cid:702, caption:"Ethanol. PubChem CID 702 3D conformer, including hydrogens.", atoms:[["O",-1.17,0.30,0.00],["C",-0.05,-0.57,0.00],["C",1.22,0.27,0.00],["H",-0.10,-1.21,0.88],["H",-0.10,-1.19,-0.89],["H",2.10,-0.37,-0.02],["H",1.24,0.93,-0.87],["H",1.26,0.91,0.89],["H",-1.13,0.84,0.81]], bonds:[[0,1],[0,8],[1,2],[1,3],[1,4],[2,5],[2,6],[2,7]]}
   };
+  var MOL_ORDER = ["caffeine", "aspirin", "serotonin", "dopamine", "glucose", "ethanol"];
 
   function blank(h, w) {
     var g = [];
@@ -1137,7 +1156,7 @@
 
   function put(g, y, x, ch, cls) {
     if (y < 0 || x < 0 || y >= g.length || x >= g[0].length) return;
-    var strong = ch === "●" || ch === "O" || ch === "N" || ch === "C";
+    var strong = "ONCH".indexOf(ch) !== -1;
     if (!strong && g[y][x].ch !== " ") return;
     g[y][x] = { ch: ch, cls: cls };
   }
@@ -1163,135 +1182,43 @@
     }
   }
 
-  function dna(spin) {
-    var H = 16, W = 34, g = blank(H, W), amp = 12;
-    var p1 = null, p2 = null, rows = [], y, a, x1, x2, row, lo, hi, x;
-    for (y = 0; y < H; y++) {
-      a = spin + y * 0.62;
-      x1 = Math.round(W / 2 + Math.sin(a) * amp);
-      x2 = Math.round(W / 2 + Math.sin(a + Math.PI) * amp);
-      rows.push({ y: y, x1: x1, x2: x2, a: a });
-    }
-    for (y = 0; y < rows.length; y++) {
-      row = rows[y];
-      lo = Math.min(row.x1, row.x2);
-      hi = Math.max(row.x1, row.x2);
-      if (hi - lo > 2) {
-        for (x = lo + 1; x < hi; x++) put(g, row.y, x, "─", row.y % 2 ? "c" : "d");
-      }
-    }
-    for (y = 0; y < rows.length; y++) {
-      row = rows[y];
-      if (p1 && Math.abs(row.x1 - p1.x) < 8) stroke(g, p1.x, p1.y, row.x1, row.y, "a");
-      if (p2 && Math.abs(row.x2 - p2.x) < 8) stroke(g, p2.x, p2.y, row.x2, row.y, "b");
-      p1 = { x: row.x1, y: row.y };
-      p2 = { x: row.x2, y: row.y };
-    }
-    for (y = 0; y < rows.length; y++) {
-      row = rows[y];
-      if (Math.cos(row.a) > 0) {
-        put(g, row.y, row.x2, "●", "b");
-        put(g, row.y, row.x1, "●", "a");
-      } else {
-        put(g, row.y, row.x1, "●", "a");
-        put(g, row.y, row.x2, "●", "b");
-      }
-    }
-    return g;
-  }
+  var EL = { C: "c", N: "b", O: "d", H: "f", P: "e", S: "a" };
 
-  function protein(angle) {
-    var H = 18, W = 36, g = blank(H, W);
-    var pts = [], bonds = [], prev = null, i, u, ang, id, top, s1, s2, proj, pix;
-    function add(x, y, z) { pts.push({ x: x, y: y, z: z }); return pts.length - 1; }
-    for (i = 0; i <= 32; i++) {
-      u = i / 32;
-      ang = u * Math.PI * 2 * 3.2;
-      id = add(-8 + Math.cos(ang) * 2.1, (u - 0.5) * 14, Math.sin(ang) * 2.1);
-      if (prev !== null) bonds.push([prev, id, "e"]);
-      prev = id;
-    }
-    top = pts[prev];
-    s1 = [prev];
-    for (i = 1; i <= 10; i++) {
-      id = add(4.5, top.y - i * 1.35, i % 2 ? 0.55 : -0.55);
-      bonds.push([s1[s1.length - 1], id, "d"]);
-      s1.push(id);
-    }
-    s2 = [s1[s1.length - 1]];
-    id = add(8.2, pts[s1[s1.length - 1]].y - 0.6, 0.2);
-    bonds.push([s2[0], id, "f"]);
-    s2.push(id);
-    for (i = 1; i <= 10; i++) {
-      id = add(8.2, pts[s1[s1.length - 1]].y - 0.6 + i * 1.35, i % 2 ? -0.55 : 0.55);
-      bonds.push([s2[s2.length - 1], id, "d"]);
-      s2.push(id);
-    }
-    for (i = 2; i < 10; i += 2) bonds.push([s1[i], s2[s2.length - 1 - i], "f"]);
-    proj = pts.map(function (p) {
-      var c = Math.cos(angle), s = Math.sin(angle);
-      return { x: p.x * c + p.z * s, y: p.y, z: -p.x * s + p.z * c };
+  function molecule(name, angle) {
+    var mol = MOLS[name];
+    var H = 18, W = 40, g = blank(H, W);
+    var c = Math.cos(angle), s = Math.sin(angle);
+    var tilt = 0.4, ct = Math.cos(tilt), st = Math.sin(tilt);
+    var proj = mol.atoms.map(function (p) {
+      var xr = p[1] * c + p[3] * s;
+      var zr = -p[1] * s + p[3] * c;
+      return { el: p[0], x: xr, y: p[2] * ct - zr * st, z: p[2] * st + zr * ct };
     });
     var minX = 99, maxX = -99, minY = 99, maxY = -99;
     proj.forEach(function (p) {
       minX = Math.min(minX, p.x); maxX = Math.max(maxX, p.x);
       minY = Math.min(minY, p.y); maxY = Math.max(maxY, p.y);
     });
-    var sc = Math.min((W - 3) / (maxX - minX || 1), (H - 3) / (maxY - minY || 1));
-    var ox = (W - (maxX - minX) * sc) / 2;
-    var oy = (H - (maxY - minY) * sc) / 2;
-    pix = proj.map(function (p) {
-      return {
-        x: Math.round(ox + (p.x - minX) * sc),
-        y: Math.round(oy + (maxY - p.y) * sc),
-        z: p.z
-      };
-    });
-    bonds.map(function (b, n) { return { n: n, z: (pix[b[0]].z + pix[b[1]].z) / 2 }; })
-      .sort(function (a, b) { return a.z - b.z; })
-      .forEach(function (item) {
-        var b = bonds[item.n];
-        stroke(g, pix[b[0]].x, pix[b[0]].y, pix[b[1]].x, pix[b[1]].y, b[2]);
-      });
-    pix.forEach(function (p, n) {
-      if (n % 2 !== 0) return;
-      put(g, p.y, p.x, "●", n <= 32 ? "e" : "d");
-    });
-    return g;
-  }
-
-  function caffeine(angle) {
-    var H = 16, W = 34, g = blank(H, W);
-    var atoms = [
-      ["N", 0, 2.2, 0.2], ["C", -1.3, 1.1, 0], ["N", -1.3, -0.4, 0], ["C", 0, -1.3, 0],
-      ["C", 1.3, -0.4, 0], ["C", 1.3, 1.1, 0], ["O", -2.5, 1.8, 0.3], ["O", 2.5, 1.8, -0.2],
-      ["C", 0, 3.6, 0.6], ["C", -2.6, -1.2, -0.4], ["N", 2.4, -1.2, 0], ["C", 2.2, -2.5, 0],
-      ["N", 0.8, -2.7, 0], ["C", 3.7, -0.6, 0.5]
-    ];
-    var bonds = [[0,1],[1,2],[2,3],[3,4],[4,5],[5,0],[1,6],[5,7],[0,8],[2,9],[4,10],[10,11],[11,12],[12,3],[10,13]];
-    var c = Math.cos(angle), s = Math.sin(angle);
-    var pix = atoms.map(function (p) {
-      return { el: p[0], x: p[1] * c + p[3] * s, y: p[2], z: -p[1] * s + p[3] * c };
-    });
-    var minX = 99, maxX = -99, minY = 99, maxY = -99;
-    pix.forEach(function (p) {
-      minX = Math.min(minX, p.x); maxX = Math.max(maxX, p.x);
-      minY = Math.min(minY, p.y); maxY = Math.max(maxY, p.y);
-    });
     var sc = Math.min((W - 4) / (maxX - minX || 1), (H - 3) / (maxY - minY || 1));
     var ox = (W - (maxX - minX) * sc) / 2;
     var oy = (H - (maxY - minY) * sc) / 2;
-    var at = pix.map(function (p) {
+    var pix = proj.map(function (p) {
       return {
         el: p.el,
         x: Math.round(ox + (p.x - minX) * sc),
         y: Math.round(oy + (maxY - p.y) * sc),
         z: p.z,
-        cls: p.el === "O" ? "d" : p.el === "N" ? "b" : "c"
+        cls: EL[p.el] || "f"
       };
     });
-    bonds.forEach(function (b) { stroke(g, at[b[0]].x, at[b[0]].y, at[b[1]].x, at[b[1]].y, "f"); });
-    at.slice().sort(function (a, b) { return a.z - b.z; }).forEach(function (p) { put(g, p.y, p.x, p.el, p.cls); });
+    mol.bonds.slice().sort(function (a, b) {
+      return (pix[a[0]].z + pix[a[1]].z) - (pix[b[0]].z + pix[b[1]].z);
+    }).forEach(function (b) {
+      stroke(g, pix[b[0]].x, pix[b[0]].y, pix[b[1]].x, pix[b[1]].y, "f");
+    });
+    pix.slice().sort(function (a, b) { return a.z - b.z; }).forEach(function (p) {
+      put(g, p.y, p.x, p.el, p.cls);
+    });
     return g;
   }
 
@@ -1316,9 +1243,8 @@
   }
 
   function drawViz() {
-    if (!vizEl) return;
-    var g = vizName === "protein" ? protein(phase) : vizName === "caffeine" ? caffeine(phase) : dna(phase);
-    vizEl.innerHTML = gridHTML(g);
+    if (!vizEl || !MOLS[vizName]) return;
+    vizEl.innerHTML = gridHTML(molecule(vizName, phase));
   }
 
   function stopViz() {
@@ -1328,18 +1254,13 @@
 
   function startViz() {
     stopViz();
-    if (motion.matches || document.hidden || persona !== "bio") return;
-    if (vizEl && typeof IntersectionObserver === "function") {
-      /* observer sets running */
-    }
-    if (vizPaused) return;
+    if (motion.matches || document.hidden || vizPaused) return;
     timer = setInterval(function () {
-      phase += vizName === "dna" ? 0.24 : 0.16;
+      phase += 0.12;
       drawViz();
-    }, 130);
+    }, 140);
   }
 
-  var vizPaused = false;
   if (vizEl && typeof IntersectionObserver === "function") {
     var observer = new IntersectionObserver(function (entries) {
       vizPaused = !entries[0].isIntersecting;
@@ -1350,49 +1271,21 @@
   }
 
   function setViz(name) {
-    if (!captions[name]) return "viz: try dna, protein, or caffeine";
+    if (!MOLS[name]) return "viz: " + MOL_ORDER.join(" | ");
     vizName = name;
-    phase = name === "caffeine" ? 0 : name === "protein" ? 0.55 : 0.6;
+    phase = 0.8;
     if (vizCmd) vizCmd.textContent = "viz " + name;
-    if (caption) caption.textContent = captions[name];
+    if (caption) caption.textContent = MOLS[name].caption;
     drawViz();
     startViz();
     return "viz " + name;
   }
 
-  function paintPersona() {
-    if (hostEl) hostEl.textContent = persona;
-    if (chromeTitle) chromeTitle.textContent = "dcm@" + persona + " — zsh";
-    document.querySelectorAll("[data-persona]").forEach(function (a) {
-      if (a.getAttribute("data-persona") === persona) a.setAttribute("aria-current", "true");
-      else a.removeAttribute("aria-current");
-    });
-    if (bioPanel) bioPanel.hidden = persona === "tech";
-    if (frame) {
-      frame.hidden = persona !== "tech";
-      if (persona === "tech" && frame.getAttribute("src") !== "tech.html") frame.setAttribute("src", "tech.html");
-    }
-    document.title = persona === "tech"
-      ? "Daniel C Morgan — dcm@tech"
-      : "Daniel C Morgan — Computational Biologist at Root Bio";
-    if (persona !== "bio") stopViz();
-    else startViz();
-  }
-
-  function applyPersona(next, writeHash) {
-    persona = next === "tech" ? "tech" : "bio";
-    try { localStorage.setItem("dcm-persona", persona); } catch (e) {}
-    paintPersona();
-    if (writeHash) {
-      var hash = persona === "tech" ? "#tech" : "#bio";
-      if (location.hash !== hash) {
-        try {
-          history.replaceState(null, "", location.pathname + location.search + hash);
-        } catch (e) {
-          location.hash = hash;
-        }
-      }
-    }
+  function goPersona(next) {
+    try { localStorage.setItem("dcm-persona", next); } catch (e) {}
+    var url = new URL(next === "tech" ? "tech.html" : "index.html", location.href);
+    url.hash = next;
+    location.assign(url.href);
   }
 
   function say(text) {
@@ -1405,10 +1298,11 @@
 
   function helpText() {
     return [
-      "su bio, su tech              switch persona",
-      "cd ~bio, cd ~tech            same",
-      "whoami --bio, whoami --tech  same",
-      "viz dna | protein | caffeine",
+      "su bio, su tech                 open that page",
+      "cd ~bio, cd ~tech               same",
+      "whoami --bio, whoami --tech     same",
+      "viz " + MOL_ORDER.join(" | "),
+      "viz                             list molecules",
       "help"
     ].join("\n");
   }
@@ -1422,24 +1316,19 @@
     if (cmd === "help") return helpText();
     if (cmd === "clear") { if (log) log.textContent = ""; return null; }
     if (cmd === "su" && (rest === "bio" || rest === "tech")) {
-      applyPersona(rest, true);
-      return "persona → dcm@" + rest;
+      goPersona(rest);
+      return null;
     }
     if (cmd === "cd" && (rest === "~bio" || rest === "~tech" || rest === "~/bio" || rest === "~/tech")) {
-      var who = rest.replace("~/", "").replace("~", "");
-      applyPersona(who, true);
-      return "persona → dcm@" + who;
+      goPersona(rest.replace("~/", "").replace("~", ""));
+      return null;
     }
     if (cmd === "whoami" && (rest === "--bio" || rest === "--tech")) {
-      var name = rest.slice(2);
-      applyPersona(name, true);
-      return "dcm@" + name;
+      goPersona(rest.slice(2));
+      return null;
     }
-    if (cmd === "whoami" && !rest) return "dcm@" + persona;
-    if (cmd === "viz") {
-      if (persona !== "bio") applyPersona("bio", true);
-      return setViz(rest);
-    }
+    if (cmd === "whoami" && !rest) return "dcm@bio";
+    if (cmd === "viz") return setViz(rest);
     return "command not found: " + bits[0] + " — type help";
   }
 
@@ -1448,7 +1337,7 @@
       e.preventDefault();
       var value = input.value;
       if (!value.trim()) return;
-      say("dcm@" + persona + ":~$ " + value);
+      say("dcm@bio:~$ " + value);
       history.unshift(value);
       histIdx = -1;
       var result = exec(value);
@@ -1468,27 +1357,27 @@
   }
 
   document.querySelectorAll("[data-persona]").forEach(function (a) {
-    a.addEventListener("click", function (e) {
-      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
-      e.preventDefault();
-      applyPersona(a.getAttribute("data-persona"), true);
+    a.addEventListener("click", function () {
+      try { localStorage.setItem("dcm-persona", a.getAttribute("data-persona")); } catch (e) {}
     });
   });
   document.querySelectorAll("[data-viz]").forEach(function (a) {
     a.addEventListener("click", function (e) {
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
       e.preventDefault();
-      if (persona !== "bio") applyPersona("bio", true);
       var result = setViz(a.getAttribute("data-viz"));
       say(result);
       var target = document.getElementById("structure");
-      if (target) target.scrollIntoView({ block: "start" });
+      if (target && !motion.matches) target.scrollIntoView({ block: "start" });
+      else if (target) target.scrollIntoView();
     });
   });
 
   window.addEventListener("hashchange", function () {
-    if (location.hash === "#tech") applyPersona("tech", false);
-    else if (location.hash === "#bio") applyPersona("bio", false);
+    if (location.hash === "#tech") goPersona("tech");
+    else if (location.hash === "#bio") {
+      try { localStorage.setItem("dcm-persona", "bio"); } catch (e) {}
+    }
   });
   document.addEventListener("visibilitychange", function () {
     if (document.hidden) stopViz();
@@ -1499,21 +1388,9 @@
     startViz();
   });
 
-  function initialPersona() {
-    var h = location.hash;
-    if (h === "#tech") return "tech";
-    if (h === "#bio") return "bio";
-    if (h && h.length > 1) return "bio";
-    try {
-      var saved = localStorage.getItem("dcm-persona");
-      if (saved === "tech" || saved === "bio") return saved;
-    } catch (e) {}
-    return "bio";
-  }
-
   drawViz();
-  applyPersona(initialPersona(), false);
-  if (!location.hash && persona === "tech") history.replaceState(null, "", "#tech");
+  if (caption && MOLS.caffeine) caption.textContent = MOLS.caffeine.caption;
+  startViz();
 })();
-  </script>
+</script>
 </body>

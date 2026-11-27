@@ -1,6 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script>
+      (function () {
+        try {
+          var hash = location.hash;
+          var saved = localStorage.getItem("dcm-persona");
+          if (hash === "#bio" || ((hash === "" || hash === "#") && saved === "bio")) {
+            location.replace(new URL("index.html#bio", location.href).href);
+            return;
+          }
+          localStorage.setItem("dcm-persona", "tech");
+        } catch (e) {}
+      })();
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>dcm@world:~$ whoami</title>
@@ -478,7 +491,7 @@
                 <button class="nav-btn" onclick="scrollToSection('publications')">> pubs</button>
                 <button class="nav-btn" onclick="scrollToSection('skills')">> skills</button>
                 <button class="nav-btn" onclick="scrollToSection('projects')">> projects</button>
-                <a class="nav-btn" href="index.html#bio" target="_top" style="display:inline-block;text-decoration:none;margin-left:auto;">su bio</a>
+                <a class="nav-btn" href="index.html#bio" onclick="try{localStorage.setItem('dcm-persona','bio')}catch(e){}" style="display:inline-block;text-decoration:none;margin-left:auto;">su bio</a>
                 <button class="print-btn" onclick="window.print()">⎙ PDF</button>
             </div>
 
@@ -1270,8 +1283,8 @@
             const arg = args.join(' ').toLowerCase();
 
             if ((cmd === 'su' && arg === 'bio') || (cmd === 'cd' && (arg === '~bio' || arg === '~/bio')) || (cmd === 'whoami' && arg === '--bio')) {
-                print('→ dcm@bio');
-                window.top.location.href = 'index.html#bio';
+                try { localStorage.setItem('dcm-persona', 'bio'); } catch (e) {}
+                location.assign(new URL('index.html#bio', location.href).href);
                 return;
             }
 
