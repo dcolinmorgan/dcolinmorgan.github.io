@@ -355,13 +355,54 @@
       font-size: 0.92rem;
     }
 
-    .shell {
-      position: sticky;
-      top: 0;
-      z-index: 4;
-      border-bottom: 1px solid var(--line);
-      padding: 0.65rem 1.35rem 0.75rem;
-      background: var(--chrome);
+    .chrome-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 0.4rem;
+    }
+
+    .whoami {
+      margin: 0 0 0.85rem;
+    }
+
+    .whoami-line {
+      display: flex;
+      align-items: center;
+      min-height: 1.6em;
+    }
+
+    .cmd-field {
+      position: relative;
+      flex: 1;
+      min-width: 1.2em;
+      min-height: 1.2em;
+    }
+
+    .cmd-ghost {
+      white-space: pre;
+      pointer-events: none;
+    }
+
+    .cmd-field input {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: transparent;
+      caret-color: transparent;
+      font: inherit;
+    }
+
+    .cmd-field input:focus { outline: none; }
+
+    .whoami-line:focus-within {
+      outline: 2px solid var(--blue);
+      outline-offset: 3px;
+      border-radius: 4px;
     }
 
     .shell-log {
@@ -377,44 +418,6 @@
     .shell-log:empty { display: none; margin: 0; }
 
     .shell-log p { margin: 0.12rem 0; }
-
-    .shell-line {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-
-    .shell-line input {
-      flex: 1;
-      min-width: 0;
-      border: 0;
-      padding: 0.4rem 0;
-      background: transparent;
-      color: var(--text);
-      font: inherit;
-      caret-color: var(--amber);
-    }
-
-    .shell-line input:focus { outline: none; }
-
-    .shell-line:focus-within {
-      outline: 2px solid var(--blue);
-      outline-offset: 3px;
-      border-radius: 4px;
-    }
-
-    .fallback {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.25rem 0.95rem;
-      margin: 0.35rem 0 0;
-      font-size: 0.92rem;
-    }
-
-    .fallback a[aria-current="true"] {
-      color: var(--text);
-      font-weight: 600;
-    }
 
     .prompt {
       margin: 0 0 0.85rem;
@@ -633,8 +636,7 @@
       }
 
       main,
-      .session-end,
-      .shell {
+      .session-end {
         padding-left: 1rem;
         padding-right: 1rem;
       }
@@ -643,7 +645,7 @@
 
       .chrome { grid-template-columns: auto 1fr; }
 
-      .theme-btn { justify-self: end; }
+      .chrome-actions { justify-self: end; }
 
       .fold { margin-bottom: 0.7rem; }
 
@@ -660,17 +662,7 @@
         line-height: 1.35;
       }
 
-      .shell { padding: 0.35rem 0.75rem 0.4rem; }
-
       .shell-log { max-height: 2.7rem; }
-
-      .shell-line input { padding: 0.15rem 0; }
-
-      .fallback {
-        gap: 0.1rem 0.55rem;
-        margin-top: 0.15rem;
-        font-size: 0.8rem;
-      }
 
       .interests li { grid-template-columns: 1fr; gap: 0.1rem; }
 
@@ -701,7 +693,7 @@
       body { background: #fff; color: #000; }
       .page { width: 100%; padding: 0; }
       .term { border: 0; box-shadow: none; background: #fff; }
-      .chrome, .theme-btn, .caret, .jumps, .shell { display: none; }
+      .chrome, .theme-btn, .caret, .jumps, .whoami { display: none; }
       a { color: #000; }
       .out { border-left-color: #ccc; }
     }
@@ -715,28 +707,13 @@
       <div class="chrome">
         <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
         <p class="chrome-title" id="chrome-title">dcm@bio — zsh</p>
-        <button type="button" class="theme-btn" id="theme-toggle" aria-pressed="false">
-          <span class="when-dark">Use light theme</span><span class="when-light">Use dark theme</span>
-        </button>
+        <div class="chrome-actions">
+          <button type="button" class="theme-btn" id="mol-cycle" aria-label="Next molecule, currently caffeine">caffeine</button>
+          <button type="button" class="theme-btn" id="theme-toggle" aria-pressed="false">
+            <span class="when-dark">Use light theme</span><span class="when-light">Use dark theme</span>
+          </button>
+        </div>
       </div>
-
-      <form class="shell" id="shell" action="#bio">
-        <div id="shell-log" class="shell-log" aria-live="polite"></div>
-        <label class="shell-line">
-          <span class="ps1" id="ps1"><span class="user">dcm</span><span class="punct">@</span><span class="host" id="persona-host">bio</span><span class="punct">:</span><span class="path">~</span><span class="dollar">$ </span></span>
-          <input id="command" name="command" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Command">
-        </label>
-        <p class="fallback">
-          <a href="index.html#bio" data-persona="bio" aria-current="true">su bio</a>
-          <a href="tech.html#tech" data-persona="tech">su tech</a>
-          <a href="#structure" data-viz="caffeine">viz caffeine</a>
-          <a href="#structure" data-viz="aspirin">viz aspirin</a>
-          <a href="#structure" data-viz="serotonin">viz serotonin</a>
-          <a href="#structure" data-viz="dopamine">viz dopamine</a>
-          <a href="#structure" data-viz="glucose">viz glucose</a>
-          <a href="#structure" data-viz="ethanol">viz ethanol</a>
-        </p>
-      </form>
 
       <div id="bio-panel">
       <main id="content">
@@ -767,9 +744,17 @@
             </div>
             <figcaption id="viz-caption">Caffeine. PubChem CID 2519 3D conformer, hydrogens omitted.</figcaption>
           </figure>
-          <p class="prompt">
-            <span class="user">dcm</span><span class="punct">@</span><span class="host">bio</span><span class="punct">:</span><span class="path">~</span><span class="dollar">$ </span><span class="typed" style="--chars: 6">whoami</span><span class="caret" aria-hidden="true"></span>
-          </p>
+          <form class="whoami" id="shell" action="#bio">
+            <div id="shell-log" class="shell-log" aria-live="polite"></div>
+            <label class="whoami-line">
+              <span class="user">dcm</span><span class="punct">@</span><span class="host">bio</span><span class="punct">:</span><span class="path">~</span><span class="dollar">$ </span>
+              <span class="cmd-field">
+                <span class="cmd-ghost" aria-hidden="true"><span id="cmd-mirror"></span><span class="caret"></span></span>
+                <input id="command" name="command" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Command">
+              </span>
+            </label>
+            <noscript><p><a href="tech.html#tech">su tech</a></p></noscript>
+          </form>
           <div class="out">
             <h1>Daniel C Morgan</h1>
             <p class="role">Lead Computational Biologist, <a href="https://rootbio.ai" target="_blank">RootBio</a></p>
@@ -785,15 +770,118 @@
               <li><a href="https://graffold.com" rel="noopener noreferrer" target="_blank">Graffold<span class="sr-only"> (opens in a new tab)</span></a></li>
             </ul>
             <nav class="jumps" aria-label="On this page">
-              <a href="#structure">structure</a>
-              <a href="#research">research</a>
-              <a href="#projects">projects</a>
-              <a href="#papers">papers</a>
               <a href="#work">work</a>
               <a href="#education">education</a>
+              <a href="#research">research</a>
+              <a href="#papers">papers</a>
+              <a href="#projects">projects</a>
             </nav>
           </div>
         </header>
+
+        <section class="block" aria-labelledby="work">
+          <h2 class="prompt" id="work">
+            <span class="sr-only">Work. </span>
+            <span class="user">dcm</span><span class="punct">@</span><span class="host">bio</span><span class="punct">:</span><span class="path">~</span><span class="dollar">$ </span><span class="cmd">ls work</span>
+          </h2>
+          <div class="out">
+            <ul class="jobs">
+              <li>
+                <div class="job-head">
+                  <span class="job-title">Lead Computational Biologist</span>
+                  <span class="when">2026 – Present</span>
+                </div>
+                <p class="org"><a href="https://rootbio.ai" target="_blank">RootBio</a> (ex Agteria)</p>
+                <p class="desc">AI inference platform for discovering novel small molecules.</p>
+                <ul class="tags" aria-label="Topics for RootBio">
+                  <li>AI</li><li>drug discovery</li><li>small molecules</li>
+                </ul>
+              </li>
+              <li>
+                <div class="job-head">
+                  <span class="job-title">Founder</span>
+                  <span class="when">2025 – Present</span>
+                </div>
+                <p class="org"><a href="https://graffold.com" target="_blank">Graffold</a></p>
+                <p class="desc">Building graph-based tooling end to end — product, engineering, everything.</p>
+                <ul class="tags" aria-label="Topics for Graffold">
+                  <li>Python</li><li>graphs</li><li>LLMs</li><li>founder</li>
+                </ul>
+              </li>
+              <li>
+                <div class="job-head">
+                  <span class="job-title">Data Scientist</span>
+                  <span class="when">2025 – 2026</span>
+                </div>
+                <p class="org">Olink Proteomics · Uppsala, SE</p>
+                <p class="desc">Investigate &amp; discover platform features &amp; content via AI/ML, utilizing LLMs.</p>
+                <ul class="tags" aria-label="Topics for Olink">
+                  <li>Torch</li><li>AWS</li><li>LLMs</li>
+                </ul>
+              </li>
+              <li>
+                <div class="job-head">
+                  <span class="job-title">Research Engineer</span>
+                  <span class="when">2022 – 2024</span>
+                </div>
+                <p class="org">Graphistry · Remote</p>
+                <p class="desc">AI agents with LLMs, GPU-accelerated network analysis toolkit, graph-based ML pipelines.</p>
+                <ul class="tags" aria-label="Topics for Graphistry">
+                  <li>RAPIDS</li><li>CUDF</li><li>CUML</li><li>Docker</li><li>K8s</li><li>AWS</li>
+                </ul>
+              </li>
+              <li>
+                <div class="job-head">
+                  <span class="job-title">Research Fellow</span>
+                  <span class="when">2021 – 2023</span>
+                </div>
+                <p class="org">Hong Kong University · HKSAR</p>
+                <p class="desc">Metagenomics Research Lead.</p>
+                <ul class="tags" aria-label="Topics for Hong Kong University">
+                  <li>metagenomics</li><li>bioinformatics</li>
+                </ul>
+              </li>
+              <li>
+                <div class="job-head">
+                  <span class="job-title">Postdoctoral Research Fellow</span>
+                  <span class="when">2019 – 2021</span>
+                </div>
+                <p class="org">Harvard Medical School · Boston, MA</p>
+                <p class="desc">Epigenetics analysis. Developed NetZoo, implemented GPU speed increases.</p>
+                <ul class="tags" aria-label="Topics for Harvard Medical School">
+                  <li>Python</li><li>R</li><li>Bash</li><li>GPU</li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="block" aria-labelledby="education">
+          <h2 class="prompt" id="education">
+            <span class="sr-only">Education. </span>
+            <span class="user">dcm</span><span class="punct">@</span><span class="host">bio</span><span class="punct">:</span><span class="path">~</span><span class="dollar">$ </span><span class="cmd">cat education.log</span>
+          </h2>
+          <div class="out">
+            <ul class="degrees">
+              <li>
+                <div class="job-head">
+                  <span class="job-title">PhD Bioinformatics</span>
+                  <span class="when">2015 – 2019</span>
+                </div>
+                <p class="org">Stockholm University</p>
+                <p class="desc">Thesis: Control Systems Engineering of Biological Networks</p>
+              </li>
+              <li>
+                <div class="job-head">
+                  <span class="job-title">MSc Bioinformatics</span>
+                  <span class="when">2012 – 2014</span>
+                </div>
+                <p class="org">Ohio State University</p>
+                <p class="desc">Thesis: Biological Networks Clique Merger Algorithm</p>
+              </li>
+            </ul>
+          </div>
+        </section>
 
         <section class="block" aria-labelledby="research">
           <h2 class="prompt" id="research">
@@ -823,6 +911,67 @@
                 <span>Metagenomics, epigenetics, and methylation data for transcription-factor binding prediction.</span>
               </li>
             </ul>
+          </div>
+        </section>
+
+        <section class="block" aria-labelledby="papers">
+          <h2 class="prompt" id="papers">
+            <span class="sr-only">Papers. </span>
+            <span class="user">dcm</span><span class="punct">@</span><span class="host">bio</span><span class="punct">:</span><span class="path">~</span><span class="dollar">$ </span><span class="cmd">cat papers.md</span>
+          </h2>
+          <div class="out">
+            <ol class="papers">
+              <li>
+                <a href="https://doi.org/10.1093/nargab/lqae121" target="_blank">GeneSPIDER2: large scale GRN simulation and benchmarking with perturbed single-cell data<span class="sr-only"> (opens in a new tab)</span></a>
+                <p class="authors">M Garbulowski, T Hillerton, D Morgan, D Seçilmiş, ...</p>
+                <p class="meta"><span class="journal">NAR Genomics and Bioinformatics</span> · 2024 · Cited by 11</p>
+              </li>
+              <li>
+                <a href="https://doi.org/10.1080/15592294.2024.2309826" target="_blank">Using methylation data to improve transcription factor binding prediction<span class="sr-only"> (opens in a new tab)</span></a>
+                <p class="authors">D Morgan, DL DeMeo, K Glass</p>
+                <p class="meta"><span class="journal">Epigenetics</span> · 2024 · Cited by 8</p>
+              </li>
+              <li>
+                <a href="https://doi.org/10.1093/bioadv/vbae030" target="_blank">MetaQuad: shared informative variants discovery in metagenomic samples<span class="sr-only"> (opens in a new tab)</span></a>
+                <p class="authors">S Xu, DC Morgan, G Qian, Y Huang, JWK Ho</p>
+                <p class="meta"><span class="journal">Bioinformatics Advances</span> · 2024 · Cited by 1</p>
+              </li>
+              <li>
+                <a href="https://doi.org/10.1186/s13059-023-02853-7" target="_blank">The Network Zoo: a multilingual package for the inference and analysis of gene regulatory networks<span class="sr-only"> (opens in a new tab)</span></a>
+                <p class="authors">M Ben Guebila, T Wang, CM Lopes-Ramos, V Fanfani, D Weighill, ...</p>
+                <p class="meta"><span class="journal">Genome Biology</span> · 2023 · Cited by 45</p>
+              </li>
+              <li>
+                <a href="https://doi.org/10.1038/s41467-023-37975-y" target="_blank">Altered human gut virome in patients undergoing antibiotics therapy for Helicobacter pylori<span class="sr-only"> (opens in a new tab)</span></a>
+                <p class="authors">L Wang, H Yao, DC Morgan, KS Lau, SY Leung, JWK Ho, WK Leung</p>
+                <p class="meta"><span class="journal">Nature Communications</span> · 2023 · Cited by 41</p>
+              </li>
+              <li>
+                <a href="https://doi.org/10.1093/nargab/lqac002" target="_blank">gpuZoo: Cost-effective estimation of gene regulatory networks using the Graphics Processing Unit<span class="sr-only"> (opens in a new tab)</span></a>
+                <p class="authors">MB Guebila, DC Morgan, K Glass, ML Kuijjer, DL DeMeo, J Quackenbush</p>
+                <p class="meta"><span class="journal">NAR Genomics and Bioinformatics</span> · 2022 · Cited by 7</p>
+              </li>
+              <li>
+                <a href="https://doi.org/10.1038/s41540-020-00158-0" target="_blank">Uncovering cancer gene regulation by accurate regulatory network inference from uninformative data<span class="sr-only"> (opens in a new tab)</span></a>
+                <p class="authors">D Seçilmiş, T Hillerton, D Morgan, A Tjärnberg, S Nelander, ...</p>
+                <p class="meta"><span class="journal">NPJ Systems Biology and Applications</span> · 2020 · Cited by 27</p>
+              </li>
+              <li>
+                <a href="https://doi.org/10.1038/s41598-020-70941-y" target="_blank">Perturbation-based gene regulatory network inference to unravel oncogenic mechanisms<span class="sr-only"> (opens in a new tab)</span></a>
+                <p class="authors">D Morgan, M Studham, A Tjärnberg, H Weishaupt, FJ Swartling, ...</p>
+                <p class="meta"><span class="journal">Scientific Reports</span> · 2020 · Cited by 21</p>
+              </li>
+              <li>
+                <a href="https://doi.org/10.1093/bioinformatics/bty764" target="_blank">A generalized framework for controlling FDR in gene regulatory network inference<span class="sr-only"> (opens in a new tab)</span></a>
+                <p class="authors">D Morgan, A Tjärnberg, TEM Nordling, ELL Sonnhammer</p>
+                <p class="meta"><span class="journal">Bioinformatics</span> · 2019 · Cited by 20</p>
+              </li>
+              <li>
+                <a href="https://doi.org/10.1039/C7MB00058H" target="_blank">GeneSPIDER — Gene regulatory network inference benchmarking with controlled network and data properties<span class="sr-only"> (opens in a new tab)</span></a>
+                <p class="authors">A Tjärnberg, D Morgan, M Studham, TEM Nordling, E Sonnhammer</p>
+                <p class="meta"><span class="journal">Molecular Biosystems</span> · 2017 · Cited by 25</p>
+              </li>
+            </ol>
           </div>
         </section>
 
@@ -928,170 +1077,7 @@
           </div>
         </section>
 
-        <section class="block" aria-labelledby="papers">
-          <h2 class="prompt" id="papers">
-            <span class="sr-only">Papers. </span>
-            <span class="user">dcm</span><span class="punct">@</span><span class="host">bio</span><span class="punct">:</span><span class="path">~</span><span class="dollar">$ </span><span class="cmd">cat papers.md</span>
-          </h2>
-          <div class="out">
-            <ol class="papers">
-              <li>
-                <a href="https://doi.org/10.1093/nargab/lqae121" target="_blank">GeneSPIDER2: large scale GRN simulation and benchmarking with perturbed single-cell data<span class="sr-only"> (opens in a new tab)</span></a>
-                <p class="authors">M Garbulowski, T Hillerton, D Morgan, D Seçilmiş, ...</p>
-                <p class="meta"><span class="journal">NAR Genomics and Bioinformatics</span> · 2024 · Cited by 11</p>
-              </li>
-              <li>
-                <a href="https://doi.org/10.1080/15592294.2024.2309826" target="_blank">Using methylation data to improve transcription factor binding prediction<span class="sr-only"> (opens in a new tab)</span></a>
-                <p class="authors">D Morgan, DL DeMeo, K Glass</p>
-                <p class="meta"><span class="journal">Epigenetics</span> · 2024 · Cited by 8</p>
-              </li>
-              <li>
-                <a href="https://doi.org/10.1093/bioadv/vbae030" target="_blank">MetaQuad: shared informative variants discovery in metagenomic samples<span class="sr-only"> (opens in a new tab)</span></a>
-                <p class="authors">S Xu, DC Morgan, G Qian, Y Huang, JWK Ho</p>
-                <p class="meta"><span class="journal">Bioinformatics Advances</span> · 2024 · Cited by 1</p>
-              </li>
-              <li>
-                <a href="https://doi.org/10.1186/s13059-023-02853-7" target="_blank">The Network Zoo: a multilingual package for the inference and analysis of gene regulatory networks<span class="sr-only"> (opens in a new tab)</span></a>
-                <p class="authors">M Ben Guebila, T Wang, CM Lopes-Ramos, V Fanfani, D Weighill, ...</p>
-                <p class="meta"><span class="journal">Genome Biology</span> · 2023 · Cited by 45</p>
-              </li>
-              <li>
-                <a href="https://doi.org/10.1038/s41467-023-37975-y" target="_blank">Altered human gut virome in patients undergoing antibiotics therapy for Helicobacter pylori<span class="sr-only"> (opens in a new tab)</span></a>
-                <p class="authors">L Wang, H Yao, DC Morgan, KS Lau, SY Leung, JWK Ho, WK Leung</p>
-                <p class="meta"><span class="journal">Nature Communications</span> · 2023 · Cited by 41</p>
-              </li>
-              <li>
-                <a href="https://doi.org/10.1093/nargab/lqac002" target="_blank">gpuZoo: Cost-effective estimation of gene regulatory networks using the Graphics Processing Unit<span class="sr-only"> (opens in a new tab)</span></a>
-                <p class="authors">MB Guebila, DC Morgan, K Glass, ML Kuijjer, DL DeMeo, J Quackenbush</p>
-                <p class="meta"><span class="journal">NAR Genomics and Bioinformatics</span> · 2022 · Cited by 7</p>
-              </li>
-              <li>
-                <a href="https://doi.org/10.1038/s41540-020-00158-0" target="_blank">Uncovering cancer gene regulation by accurate regulatory network inference from uninformative data<span class="sr-only"> (opens in a new tab)</span></a>
-                <p class="authors">D Seçilmiş, T Hillerton, D Morgan, A Tjärnberg, S Nelander, ...</p>
-                <p class="meta"><span class="journal">NPJ Systems Biology and Applications</span> · 2020 · Cited by 27</p>
-              </li>
-              <li>
-                <a href="https://doi.org/10.1038/s41598-020-70941-y" target="_blank">Perturbation-based gene regulatory network inference to unravel oncogenic mechanisms<span class="sr-only"> (opens in a new tab)</span></a>
-                <p class="authors">D Morgan, M Studham, A Tjärnberg, H Weishaupt, FJ Swartling, ...</p>
-                <p class="meta"><span class="journal">Scientific Reports</span> · 2020 · Cited by 21</p>
-              </li>
-              <li>
-                <a href="https://doi.org/10.1093/bioinformatics/bty764" target="_blank">A generalized framework for controlling FDR in gene regulatory network inference<span class="sr-only"> (opens in a new tab)</span></a>
-                <p class="authors">D Morgan, A Tjärnberg, TEM Nordling, ELL Sonnhammer</p>
-                <p class="meta"><span class="journal">Bioinformatics</span> · 2019 · Cited by 20</p>
-              </li>
-              <li>
-                <a href="https://doi.org/10.1039/C7MB00058H" target="_blank">GeneSPIDER — Gene regulatory network inference benchmarking with controlled network and data properties<span class="sr-only"> (opens in a new tab)</span></a>
-                <p class="authors">A Tjärnberg, D Morgan, M Studham, TEM Nordling, E Sonnhammer</p>
-                <p class="meta"><span class="journal">Molecular Biosystems</span> · 2017 · Cited by 25</p>
-              </li>
-            </ol>
-          </div>
-        </section>
-
-        <section class="block" aria-labelledby="work">
-          <h2 class="prompt" id="work">
-            <span class="sr-only">Work. </span>
-            <span class="user">dcm</span><span class="punct">@</span><span class="host">bio</span><span class="punct">:</span><span class="path">~</span><span class="dollar">$ </span><span class="cmd">ls work</span>
-          </h2>
-          <div class="out">
-            <ul class="jobs">
-              <li>
-                <div class="job-head">
-                  <span class="job-title">Lead Computational Biologist</span>
-                  <span class="when">2026 – Present</span>
-                </div>
-                <p class="org"><a href="https://rootbio.ai" target="_blank">RootBio</a> (ex Agteria)</p>
-                <p class="desc">AI inference platform for discovering novel small molecules.</p>
-                <ul class="tags" aria-label="Topics for RootBio">
-                  <li>AI</li><li>drug discovery</li><li>small molecules</li>
-                </ul>
-              </li>
-              <li>
-                <div class="job-head">
-                  <span class="job-title">Founder</span>
-                  <span class="when">2025 – Present</span>
-                </div>
-                <p class="org"><a href="https://graffold.com" target="_blank">Graffold</a></p>
-                <p class="desc">Building graph-based tooling end to end — product, engineering, everything.</p>
-                <ul class="tags" aria-label="Topics for Graffold">
-                  <li>Python</li><li>graphs</li><li>LLMs</li><li>founder</li>
-                </ul>
-              </li>
-              <li>
-                <div class="job-head">
-                  <span class="job-title">Data Scientist</span>
-                  <span class="when">2025 – 2026</span>
-                </div>
-                <p class="org">Olink Proteomics · Uppsala, SE</p>
-                <p class="desc">Investigate &amp; discover platform features &amp; content via AI/ML, utilizing LLMs.</p>
-                <ul class="tags" aria-label="Topics for Olink">
-                  <li>Torch</li><li>AWS</li><li>LLMs</li>
-                </ul>
-              </li>
-              <li>
-                <div class="job-head">
-                  <span class="job-title">Research Engineer</span>
-                  <span class="when">2022 – 2024</span>
-                </div>
-                <p class="org">Graphistry · Remote</p>
-                <p class="desc">AI agents with LLMs, GPU-accelerated network analysis toolkit, graph-based ML pipelines.</p>
-                <ul class="tags" aria-label="Topics for Graphistry">
-                  <li>RAPIDS</li><li>CUDF</li><li>CUML</li><li>Docker</li><li>K8s</li><li>AWS</li>
-                </ul>
-              </li>
-              <li>
-                <div class="job-head">
-                  <span class="job-title">Research Fellow</span>
-                  <span class="when">2021 – 2023</span>
-                </div>
-                <p class="org">Hong Kong University · HKSAR</p>
-                <p class="desc">Metagenomics Research Lead.</p>
-                <ul class="tags" aria-label="Topics for Hong Kong University">
-                  <li>metagenomics</li><li>bioinformatics</li>
-                </ul>
-              </li>
-              <li>
-                <div class="job-head">
-                  <span class="job-title">Postdoctoral Research Fellow</span>
-                  <span class="when">2019 – 2021</span>
-                </div>
-                <p class="org">Harvard Medical School · Boston, MA</p>
-                <p class="desc">Epigenetics analysis. Developed NetZoo, implemented GPU speed increases.</p>
-                <ul class="tags" aria-label="Topics for Harvard Medical School">
-                  <li>Python</li><li>R</li><li>Bash</li><li>GPU</li>
-                </ul>
-              </li>
-            </ul>
-          </div>
-        </section>
-
-        <section class="block" aria-labelledby="education">
-          <h2 class="prompt" id="education">
-            <span class="sr-only">Education. </span>
-            <span class="user">dcm</span><span class="punct">@</span><span class="host">bio</span><span class="punct">:</span><span class="path">~</span><span class="dollar">$ </span><span class="cmd">cat education.log</span>
-          </h2>
-          <div class="out">
-            <ul class="degrees">
-              <li>
-                <div class="job-head">
-                  <span class="job-title">PhD Bioinformatics</span>
-                  <span class="when">2015 – 2019</span>
-                </div>
-                <p class="org">Stockholm University</p>
-                <p class="desc">Thesis: Control Systems Engineering of Biological Networks</p>
-              </li>
-              <li>
-                <div class="job-head">
-                  <span class="job-title">MSc Bioinformatics</span>
-                  <span class="when">2012 – 2014</span>
-                </div>
-                <p class="org">Ohio State University</p>
-                <p class="desc">Thesis: Biological Networks Clique Merger Algorithm</p>
-              </li>
-            </ul>
-          </div>
-        </section>
+        
       </main>
       </div>
 
@@ -1168,7 +1154,7 @@
     glucose: {cid:5793, caption:"D-glucose. PubChem CID 5793 3D conformer, hydrogens omitted.", atoms:[["O",-0.67,1.16,0.26],["O",-0.89,-2.45,-0.34],["O",1.86,-2.07,0.47],["O",2.86,0.54,-0.46],["O",1.12,2.66,0.26],["O",-3.37,0.97,-0.19],["C",-0.37,-1.25,0.23],["C",1.09,-1.07,-0.19],["C",-1.22,-0.06,-0.24],["C",1.61,0.32,0.18],["C",0.64,1.41,-0.25],["C",-2.65,-0.16,0.27]], bonds:[[0,8],[0,10],[1,6],[2,7],[3,9],[4,10],[5,11],[6,7],[6,8],[7,9],[8,11],[9,10]]},
     ethanol: {cid:702, caption:"Ethanol. PubChem CID 702 3D conformer, including hydrogens.", atoms:[["O",-1.17,0.30,0.00],["C",-0.05,-0.57,0.00],["C",1.22,0.27,0.00],["H",-0.10,-1.21,0.88],["H",-0.10,-1.19,-0.89],["H",2.10,-0.37,-0.02],["H",1.24,0.93,-0.87],["H",1.26,0.91,0.89],["H",-1.13,0.84,0.81]], bonds:[[0,1],[0,8],[1,2],[1,3],[1,4],[2,5],[2,6],[2,7]]}
   };
-  var MOL_ORDER = ["caffeine", "aspirin", "serotonin", "dopamine", "glucose", "ethanol"];
+  var MOL_ORDER = ["caffeine", "aspirin", "dopamine", "serotonin", "glucose", "ethanol"];
 
   function blank(h, w) {
     var g = [];
@@ -1296,15 +1282,28 @@
     observer.observe(vizEl);
   }
 
+  function paintMolBtn() {
+    var molBtn = document.getElementById("mol-cycle");
+    if (!molBtn) return;
+    molBtn.textContent = vizName;
+    molBtn.setAttribute("aria-label", "Next molecule, currently " + vizName);
+  }
+
   function setViz(name) {
     if (!MOLS[name]) return "viz: " + MOL_ORDER.join(" | ");
     vizName = name;
     phase = 0.8;
     if (vizCmd) vizCmd.textContent = "viz " + name;
     if (caption) caption.textContent = MOLS[name].caption;
+    paintMolBtn();
     drawViz();
     startViz();
     return "viz " + name;
+  }
+
+  function nextMol() {
+    var i = MOL_ORDER.indexOf(vizName);
+    return setViz(MOL_ORDER[(i + 1) % MOL_ORDER.length]);
   }
 
   function goPersona(next) {
@@ -1359,6 +1358,12 @@
     return "command not found: " + bits[0] + " — type help";
   }
 
+  function syncCaret() {
+    var mirror = document.getElementById("cmd-mirror");
+    if (!mirror || !input) return;
+    mirror.textContent = input.value.replace(/ /g, "\u00a0");
+  }
+
   if (form && input) {
     form.addEventListener("submit", function (e) {
       e.preventDefault();
@@ -1370,7 +1375,9 @@
       var result = exec(value);
       if (result) say(result);
       input.value = "";
+      syncCaret();
     });
+    input.addEventListener("input", syncCaret);
     input.addEventListener("keydown", function (e) {
       if (e.key === "ArrowUp") {
         e.preventDefault();
@@ -1380,25 +1387,17 @@
         if (histIdx > 0) { histIdx--; input.value = history[histIdx]; }
         else { histIdx = -1; input.value = ""; }
       }
+      syncCaret();
     });
   }
 
-  document.querySelectorAll("[data-persona]").forEach(function (a) {
-    a.addEventListener("click", function () {
-      try { localStorage.setItem("dcm-persona", a.getAttribute("data-persona")); } catch (e) {}
-    });
-  });
-  document.querySelectorAll("[data-viz]").forEach(function (a) {
-    a.addEventListener("click", function (e) {
-      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
-      e.preventDefault();
-      var result = setViz(a.getAttribute("data-viz"));
+  var molBtn = document.getElementById("mol-cycle");
+  if (molBtn) {
+    molBtn.addEventListener("click", function () {
+      var result = nextMol();
       say(result);
-      var target = document.getElementById("structure");
-      if (target && !motion.matches) target.scrollIntoView({ block: "start" });
-      else if (target) target.scrollIntoView();
     });
-  });
+  }
 
   window.addEventListener("hashchange", function () {
     if (location.hash === "#tech") goPersona("tech");
@@ -1416,7 +1415,9 @@
   });
 
   drawViz();
+  paintMolBtn();
   if (caption && MOLS.caffeine) caption.textContent = MOLS.caffeine.caption;
+  syncCaret();
   startViz();
 })();
 </script>
