@@ -153,7 +153,7 @@
         #terminal {
             max-width: 900px;
             margin: 0 auto;
-            padding: 2rem 1.5rem;
+            padding: 2rem 1.5rem 5.5rem;
             opacity: 0;
             transition: opacity 0.8s;
         }
@@ -384,6 +384,7 @@
             z-index: -1;
             opacity: var(--rain-opacity);
             transition: opacity 0.4s;
+            pointer-events: none;
         }
 
         /* Graph background canvas */
@@ -425,6 +426,29 @@
         /* Typing effect for about */
         .typed-text { border-right: 2px solid var(--primary); padding-right: 2px; }
         .typed-text.done { border-right: none; }
+
+        .cmd-try {
+            margin: 0 0 0.6rem;
+            color: var(--dim);
+            font-size: 13px;
+            line-height: 1.8;
+            text-align: center;
+        }
+        .cmd-try button, .cmd-try a {
+            font: inherit;
+            font-size: inherit;
+            color: var(--accent2);
+            background: none;
+            border: 0;
+            border-bottom: 1px dashed var(--dark);
+            padding: 0.55rem 0.2rem;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .cmd-try button:focus-visible, .cmd-try a:focus-visible {
+            outline: 1px solid var(--accent2);
+            outline-offset: 2px;
+        }
 
         /* Status bar */
         .status-bar {
@@ -485,7 +509,6 @@
             <div class="mobile-logo">DCM<span class="cursor"></span></div>
 
             <div class="nav">
-                <a class="nav-btn" href="index.html#bio" onclick="try{localStorage.setItem('dcm-persona','bio')}catch(e){}" style="display:inline-block;text-decoration:none;border:1px solid var(--dark);">su bio</a>
                 <button class="nav-btn active" onclick="scrollToSection('about')">> about</button>
                 <button class="nav-btn" onclick="scrollToSection('experience')">> work</button>
                 <button class="nav-btn" onclick="scrollToSection('education')">> edu</button>
@@ -624,12 +647,8 @@
                 <div class="project-grid" id="projects-list"></div>
             </div>
 
-            <div class="section no-print" id="footer" style="text-align:center; margin-top:3rem; margin-bottom:3rem;">
-                <span class="entry-desc">© 2026 Daniel C Morgan · press [t] to change theme · type <span style="color:var(--accent2);">help</span> below</span>
-            </div>
-
             <!-- INTERACTIVE PROMPT -->
-            <div class="section no-print" id="shell" style="margin-bottom:4rem;">
+            <div class="section no-print" id="shell">
                 <div id="shell-output" style="font-size:13px; line-height:1.6;"></div>
                 <div class="shell-input-line" style="font-size:13px; display:flex; align-items:center; gap:0.4rem;">
                     <span class="prompt">dcm@world</span>:<span class="path">~</span>$
@@ -637,6 +656,17 @@
                         aria-label="terminal command input"
                         style="flex:1; background:none; border:none; outline:none; color:var(--primary); font-family:'Fira Code',monospace; font-size:13px; caret-color:var(--primary);">
                 </div>
+            </div>
+
+            <div class="section no-print" id="footer">
+                <p class="cmd-try">try:
+                    <a href="index.html#bio" data-cmd="su bio">su bio</a>
+                    <span aria-hidden="true">·</span>
+                    <button type="button" data-cmd="theme">theme</button>
+                    <span aria-hidden="true">·</span>
+                    <button type="button" data-cmd="help">help</button>
+                </p>
+                <p class="entry-desc" style="text-align:center;">© 2026 Daniel C Morgan</p>
             </div>
         </div>
     </div>
@@ -1279,7 +1309,8 @@
             if (!line) return;
             echo(line);
             history.unshift(line); histIdx = -1;
-            const [cmd, ...args] = line.split(/\s+/);
+            const [rawCmd, ...args] = line.split(/\s+/);
+            const cmd = rawCmd.toLowerCase();
             const arg = args.join(' ').toLowerCase();
 
             if ((cmd === 'su' && arg === 'bio') || (cmd === 'cd' && (arg === '~bio' || arg === '~/bio')) || (cmd === 'whoami' && arg === '--bio')) {
@@ -1298,12 +1329,49 @@
                 if (arg.includes('about')) { print(COMMANDS.about()); return; }
                 print('<span style="color:var(--accent3);">cat: '+escapeHtml(arg)+': No such file</span>'); return;
             }
+            if (cmd === 'help' && arg === '--all') {
+                print(COMMANDS.help() + '<br><br># unlisted<br>sudo · ls -a · cowsay · coffee · vim · :q · exit · rm -rf / · pdb &lt;id&gt;');
+                return;
+            }
             if (cmd === 'theme') {
+                if (!arg) {
+                    applyTheme((currentTheme + 1) % THEMES.length);
+                    print('theme → ' + THEMES[currentTheme].name);
+                    return;
+                }
                 const i = THEMES.findIndex(t => t.name === arg);
                 if (i >= 0) { applyTheme(i); print('theme → '+arg); }
                 else print('<span style="color:var(--accent3);">theme: unknown \''+escapeHtml(arg)+'\'. Try: '+THEMES.map(t=>t.name).join(', ')+'</span>');
                 return;
             }
+            if (cmd === 'ls' && (arg === '-a' || arg === '-al' || arg === '-la')) {
+                print('. &nbsp; .. &nbsp; .coffee &nbsp; .cowsay &nbsp; .sudoers &nbsp; .vimrc &nbsp; .pdb<br>' + COMMANDS.ls());
+                return;
+            }
+            if (cmd === 'cowsay') {
+                const raw = (args.join(' ') || 'graphs, not grass').slice(0, 42);
+                const bar = '-'.repeat(raw.length + 2);
+                print('<pre style="margin:0;color:var(--primary);">' + [
+                    ' ' + bar,
+                    '&lt; ' + escapeHtml(raw) + ' &gt;',
+                    ' ' + bar,
+                    '        \\   ^__^',
+                    '         \\  (oo)\\_______',
+                    '            (__)\\       )\\/\\',
+                    '                ||----w |',
+                    '                ||     ||'
+                ].join('\n') + '</pre>');
+                return;
+            }
+            if (cmd === 'coffee') { print('no pot on this host. the bio page is brewing. try <span style="color:var(--accent2);">su bio</span>'); return; }
+            if (cmd === 'vim') { window.__dcmVim = true; print('-- INSERT --<br>E486: you are already in a browser.<br>Type :q to quit.'); return; }
+            if (line === ':q' || line === ':q!') {
+                if (!window.__dcmVim) { print('E21: you are not in vim.'); return; }
+                window.__dcmVim = false; print(''); return;
+            }
+            if (cmd === 'exit' || cmd === 'logout') { print('logout<br>connection closed by remote host.<br>(the tab is still open.)'); return; }
+            if (cmd === 'rm' && arg.replace(/\s+/g, ' ') === '-rf /') { print('<span style="color:var(--accent3);">rm: refusing to remove \'/\'. biological roots stay put.</span>'); return; }
+            if (cmd === 'pdb') { print(arg ? ('pdb ' + escapeHtml(arg) + ': no breakpoint. this shell does not debug Python.') : 'pdb: missing id. this is a shell, not the Python debugger.'); return; }
             const fn = COMMANDS[cmd];
             if (fn) { const r = fn(); if (r !== null) print(r); }
             else print('<span style="color:var(--accent3);">command not found: '+escapeHtml(cmd)+'</span> — type <span style="color:var(--accent2);">help</span>');
@@ -1328,6 +1396,14 @@
         input.addEventListener('blur', () => setMode('NORMAL'));
         // Focus prompt when clicking anywhere in the shell section
         document.getElementById('shell').addEventListener('click', () => input.focus());
+        document.querySelectorAll('[data-cmd]').forEach(el => {
+            el.addEventListener('click', (e) => {
+                if (el.tagName === 'A') e.preventDefault();
+                run(el.getAttribute('data-cmd'));
+                const last = outEl.lastElementChild;
+                if (last) last.scrollIntoView({ behavior: 'auto', block: 'nearest' });
+            });
+        });
     })();
 
     // ── Konami code easter egg (#2) ──

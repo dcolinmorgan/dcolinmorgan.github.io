@@ -251,7 +251,7 @@
 
     .chrome {
       display: grid;
-      grid-template-columns: auto 1fr auto;
+      grid-template-columns: 1fr auto 1fr;
       align-items: center;
       gap: 0.75rem;
       padding: 0.65rem 0.85rem;
@@ -263,6 +263,7 @@
     .dots {
       display: flex;
       gap: 6px;
+      justify-self: start;
     }
 
     .dots i {
@@ -363,13 +364,6 @@
       margin: 0.45rem 0 0;
       color: var(--muted);
       font-size: 0.92rem;
-    }
-
-    .chrome-actions {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      gap: 0.4rem;
     }
 
     .whoami {
@@ -634,9 +628,44 @@
     }
 
     .copy {
-      margin: 0 0 0.85rem;
+      margin: 0.85rem 0 0;
       color: var(--faint);
       font-size: 0.92rem;
+    }
+
+    .try {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.1rem 0.35rem;
+      margin: 0;
+      color: var(--faint);
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+
+    .try .sep { user-select: none; }
+
+    .try button,
+    .try a {
+      font: inherit;
+      font-size: inherit;
+      color: var(--blue);
+      background: none;
+      border: 0;
+      border-bottom: 1px solid transparent;
+      padding: 0.55rem 0.15rem;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .try button:hover,
+    .try a:hover { border-bottom-color: var(--blue); }
+
+    .try button:focus-visible,
+    .try a:focus-visible {
+      outline: 2px solid var(--blue);
+      outline-offset: 2px;
     }
 
     @media (max-width: 640px) {
@@ -650,12 +679,6 @@
         padding-left: 1rem;
         padding-right: 1rem;
       }
-
-      .chrome-title { display: none; }
-
-      .chrome { grid-template-columns: auto 1fr; }
-
-      .chrome-actions { justify-self: end; }
 
       .fold { margin-bottom: 0.7rem; }
 
@@ -717,13 +740,7 @@
       <div class="chrome">
         <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
         <p class="chrome-title" id="chrome-title">dcm@bio — zsh</p>
-        <div class="chrome-actions">
-          <a class="theme-btn" id="su-tech" href="tech.html#tech">su tech</a>
-          <button type="button" class="theme-btn" id="mol-cycle" aria-label="Next molecule, currently caffeine">caffeine</button>
-          <button type="button" class="theme-btn" id="theme-toggle" aria-pressed="false">
-            <span class="when-dark">Use light theme</span><span class="when-light">Use dark theme</span>
-          </button>
-        </div>
+        <span aria-hidden="true"></span>
       </div>
 
       <div id="bio-panel">
@@ -1093,6 +1110,17 @@
       </div>
 
       <footer class="session-end">
+        <p class="try">try:
+          <a href="tech.html#tech" data-cmd="su tech">su tech</a><span class="sep" aria-hidden="true">·</span>
+          <button type="button" data-cmd="viz caffeine">viz caffeine</button><span class="sep" aria-hidden="true">·</span>
+          <button type="button" data-cmd="viz aspirin">viz aspirin</button><span class="sep" aria-hidden="true">·</span>
+          <button type="button" data-cmd="viz dopamine">viz dopamine</button><span class="sep" aria-hidden="true">·</span>
+          <button type="button" data-cmd="viz serotonin">viz serotonin</button><span class="sep" aria-hidden="true">·</span>
+          <button type="button" data-cmd="viz glucose">viz glucose</button><span class="sep" aria-hidden="true">·</span>
+          <button type="button" data-cmd="viz ethanol">viz ethanol</button><span class="sep" aria-hidden="true">·</span>
+          <button type="button" data-cmd="theme">theme</button><span class="sep" aria-hidden="true">·</span>
+          <button type="button" data-cmd="help">help</button>
+        </p>
         <p class="copy">© 2026 Daniel C Morgan</p>
       </footer>
     </div>
@@ -1101,7 +1129,6 @@
   <script>
     (function () {
       var root = document.documentElement;
-      var btn = document.getElementById("theme-toggle");
       var meta = document.querySelector('meta[name="theme-color"]');
 
       function systemTheme() {
@@ -1115,16 +1142,16 @@
 
       function paint() {
         var current = theme();
-        btn.setAttribute("aria-pressed", current === "light" ? "true" : "false");
         if (meta) meta.setAttribute("content", current === "light" ? "#e7e1d6" : "#0b0f14");
       }
 
-      btn.addEventListener("click", function () {
+      window.dcmToggleTheme = function () {
         var next = theme() === "light" ? "dark" : "light";
         root.setAttribute("data-theme", next);
         try { localStorage.setItem("dcm-appearance", next); } catch (e) {}
         paint();
-      });
+        return "theme → " + next;
+      };
 
       paint();
     })();
@@ -1293,28 +1320,15 @@
     observer.observe(vizEl);
   }
 
-  function paintMolBtn() {
-    var molBtn = document.getElementById("mol-cycle");
-    if (!molBtn) return;
-    molBtn.textContent = vizName;
-    molBtn.setAttribute("aria-label", "Next molecule, currently " + vizName);
-  }
-
   function setViz(name) {
     if (!MOLS[name]) return "viz: " + MOL_ORDER.join(" | ");
     vizName = name;
     phase = 0.8;
     if (vizCmd) vizCmd.textContent = "viz " + name;
     if (caption) caption.textContent = MOLS[name].caption;
-    paintMolBtn();
     drawViz();
     startViz();
     return "viz " + name;
-  }
-
-  function nextMol() {
-    var i = MOL_ORDER.indexOf(vizName);
-    return setViz(MOL_ORDER[(i + 1) % MOL_ORDER.length]);
   }
 
   function goPersona(next) {
@@ -1333,6 +1347,8 @@
     log.scrollTop = log.scrollHeight;
   }
 
+  var vimMode = false;
+
   function helpText() {
     return [
       "su bio, su tech                 open that page",
@@ -1340,8 +1356,20 @@
       "whoami --bio, whoami --tech     same",
       "viz " + MOL_ORDER.join(" | "),
       "viz                             list molecules",
+      "theme                           light or dark",
       "help"
     ].join("\n");
+  }
+
+  function helpAll() {
+    return helpText() + "\n\n# unlisted\nsudo\nls -a\ncowsay\ncoffee\nvim\n:q\nexit\nrm -rf /\npdb <id>";
+  }
+
+  function cowsay(msg) {
+    var text = msg || "graphs, not grass";
+    var bar = "";
+    for (var i = 0; i < text.length + 2; i++) bar += "-";
+    return " " + bar + "\n< " + text + " >\n " + bar + "\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||";
   }
 
   function exec(raw) {
@@ -1350,8 +1378,30 @@
     var bits = line.split(/\s+/);
     var cmd = bits[0].toLowerCase();
     var rest = bits.slice(1).join(" ").toLowerCase();
+    if (cmd === "help" && rest === "--all") return helpAll();
     if (cmd === "help") return helpText();
     if (cmd === "clear") { if (log) log.textContent = ""; return null; }
+    if (cmd === "theme") return window.dcmToggleTheme ? window.dcmToggleTheme() : "theme: unavailable";
+    if (cmd === "sudo") return "dcm is not in the sudoers file. This incident will be reported.";
+    if (cmd === "ls" && (rest === "-a" || rest === "-al" || rest === "-la")) {
+      return ".  ..  .coffee  .cowsay  .sudoers  .vimrc  .pdb\nprojects/  research.md  papers.md  work/  education.log";
+    }
+    if (cmd === "ls") return "projects/  research.md  papers.md  work/  education.log";
+    if (cmd === "cowsay") return cowsay(rest);
+    if (cmd === "coffee") { setViz("caffeine"); return "brewing caffeine"; }
+    if (cmd === "vim") { vimMode = true; return "-- INSERT --\nE486: you are already in a browser.\nType :q to quit."; }
+    if (line === ":q" || line === ":q!") {
+      if (!vimMode) return "E21: you are not in vim.";
+      vimMode = false;
+      return "";
+    }
+    if (cmd === "exit" || cmd === "logout") return "logout\nconnection closed by remote host.\n(the tab is still open.)";
+    if (cmd === "rm" && rest.replace(/\s+/g, " ") === "-rf /") return "rm: refusing to remove '/' . biological roots stay at RootBio.";
+    if (cmd === "pdb") {
+      if (!rest) return "pdb: missing id. this is a shell, not the Python debugger.";
+      if (MOLS[rest]) { setViz(rest); return "pdb " + rest + ": breakpoint set on a molecule, not a stack frame. (c)ontinue"; }
+      return "pdb " + rest + ": no such target. try pdb caffeine";
+    }
     if (cmd === "su" && (rest === "bio" || rest === "tech")) {
       goPersona(rest);
       return null;
@@ -1402,13 +1452,31 @@
     });
   }
 
-  var molBtn = document.getElementById("mol-cycle");
-  if (molBtn) {
-    molBtn.addEventListener("click", function () {
-      var result = nextMol();
-      say(result);
-    });
+  function runCommand(value) {
+    if (!value || !value.trim()) return;
+    say("dcm@bio:~$ " + value);
+    history.unshift(value);
+    histIdx = -1;
+    var result = exec(value);
+    if (result) say(result);
+    if (input) { input.value = ""; syncCaret(); }
   }
+
+  function reveal(el) {
+    if (!el || typeof el.scrollIntoView !== "function") return;
+    el.scrollIntoView({ behavior: motion.matches ? "auto" : "smooth", block: "nearest" });
+  }
+
+  document.querySelectorAll("[data-cmd]").forEach(function (el) {
+    el.addEventListener("click", function (e) {
+      if (el.tagName === "A") e.preventDefault();
+      var value = el.getAttribute("data-cmd") || "";
+      runCommand(value);
+      var kind = value.trim().toLowerCase();
+      if (kind.indexOf("viz ") === 0) reveal(document.querySelector(".fold"));
+      else if (kind.indexOf("su ") !== 0) reveal(form);
+    });
+  });
 
   window.addEventListener("hashchange", function () {
     if (location.hash === "#tech") goPersona("tech");
@@ -1426,7 +1494,6 @@
   });
 
   drawViz();
-  paintMolBtn();
   if (caption && MOLS.caffeine) caption.textContent = MOLS.caffeine.caption;
   syncCaret();
   startViz();
